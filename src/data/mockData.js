@@ -1,0 +1,179 @@
+// =============================================
+// SIGAP - Mock Data
+// Universitas Tadulako - Gedung SG
+// =============================================
+
+export const currentUser = {
+  id: "U001",
+  name: "Syaif Ali M. Risal",
+  nim: "F55123064",
+  role: "mahasiswa", // "mahasiswa" | "admin"
+  prodi: "Teknik Informatika",
+  avatar: "SR",
+};
+
+export const rooms = [
+  { id: "SG-01", name: "SG-1", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-02", name: "SG-2", capacity: 40, floor: 1, status: "occupied", occupiedBy: "Rekayasa Perangkat Lunak", occupiedUntil: "10:00", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-03", name: "SG-3", capacity: 35, floor: 1, status: "ending_soon", occupiedBy: "Basis Data", occupiedUntil: "09:50", features: ["Proyektor", "AC"] },
+  { id: "SG-04", name: "SG-4", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-05", name: "SG-5", capacity: 30, floor: 2, status: "occupied", occupiedBy: "Jaringan Komputer", occupiedUntil: "11:30", features: ["Proyektor", "AC"] },
+  { id: "SG-06", name: "SG-6", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis", "Lab Komputer"] },
+  { id: "SG-07", name: "SG-7", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-08", name: "SG-8", capacity: 35, floor: 2, status: "occupied", occupiedBy: "Kecerdasan Buatan", occupiedUntil: "13:00", features: ["Proyektor", "AC"] },
+  { id: "SG-09", name: "SG-9", capacity: 40, floor: 3, status: "ending_soon", occupiedBy: "Sistem Operasi", occupiedUntil: "09:55", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-10", name: "SG-10", capacity: 40, floor: 3, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "SG-11", name: "SG-11", capacity: 30, floor: 3, status: "occupied", occupiedBy: "Pemrograman Web", occupiedUntil: "12:00", features: ["Proyektor", "AC", "Lab Komputer"] },
+  { id: "SG-12", name: "SG-12", capacity: 40, floor: 3, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+];
+
+export const bookingHistory = [
+  {
+    id: "BK001",
+    roomId: "SG-04",
+    roomName: "SG-4",
+    mataKuliah: "Capstone Project",
+    dosen: "Dr. Ir. Ahmad Fauzi, M.T.",
+    tanggal: "2026-05-07",
+    jamMulai: "13:00",
+    durasi: 2,
+    status: "approved",
+    nim: "F55123064",
+    nama: "Syaif Ali M. Risal",
+  },
+  {
+    id: "BK002",
+    roomId: "SG-07",
+    roomName: "SG-7",
+    mataKuliah: "Rekayasa Sistem Lanjutan",
+    dosen: "Dr. Siti Rahma, S.Kom., M.Cs.",
+    tanggal: "2026-05-08",
+    jamMulai: "08:00",
+    durasi: 3,
+    status: "pending",
+    nim: "F55123064",
+    nama: "Syaif Ali M. Risal",
+  },
+  {
+    id: "BK003",
+    roomId: "SG-02",
+    roomName: "SG-2",
+    mataKuliah: "Pemrograman Mobile",
+    dosen: "Andi Wahyudi, M.Kom.",
+    tanggal: "2026-05-06",
+    jamMulai: "10:00",
+    durasi: 2,
+    status: "rejected",
+    nim: "F55123064",
+    nama: "Syaif Ali M. Risal",
+    rejectReason: "Ruangan sudah terjadwal untuk kelas reguler.",
+  },
+];
+
+export const allBookings = [
+  {
+    id: "BK010",
+    roomId: "SG-01",
+    roomName: "SG-1",
+    mataKuliah: "Sistem Informasi Manajemen",
+    dosen: "Prof. Hariyanto, Ph.D.",
+    tanggal: "2026-05-07",
+    jamMulai: "08:00",
+    durasi: 2,
+    status: "pending",
+    nim: "F52123083",
+    nama: "Safana Annisa Salsabilah",
+  },
+  {
+    id: "BK011",
+    roomId: "SG-06",
+    roomName: "SG-6",
+    mataKuliah: "Algoritma dan Pemrograman",
+    dosen: "Rina Susanti, M.T.",
+    tanggal: "2026-05-07",
+    jamMulai: "10:00",
+    durasi: 3,
+    status: "pending",
+    nim: "F52123084",
+    nama: "Andini Artika Ridwan",
+  },
+  ...bookingHistory,
+];
+
+export const inventory = [
+  { id: "INV001", name: "Proyektor Epson EB-X41", serialNumber: "EPS-2024-001", status: "available", category: "Elektronik" },
+  { id: "INV002", name: "Proyektor Epson EB-X41", serialNumber: "EPS-2024-002", status: "borrowed", borrowedBy: "F55123015", borrowedUntil: "2026-05-07", ktp: "ditahan", category: "Elektronik" },
+  { id: "INV003", name: "Kabel HDMI 5m", serialNumber: "HDMI-001", status: "available", category: "Kabel" },
+  { id: "INV004", name: "Kabel VGA 5m", serialNumber: "VGA-001", status: "borrowed", borrowedBy: "F52123096", borrowedUntil: "2026-05-07", ktp: "ditahan", category: "Kabel" },
+  { id: "INV005", name: "Clicker Wireless Presenter", serialNumber: "CLK-2023-001", status: "available", category: "Elektronik" },
+  { id: "INV006", name: "Extension Cord 5 Slot", serialNumber: "EXT-001", status: "available", category: "Kabel" },
+];
+
+export const lostFoundItems = [
+  {
+    id: "LF001",
+    title: "Dompet Kulit Coklat",
+    description: "Ditemukan di bangku depan sebelah kiri ruangan SG-5. Berisi beberapa kartu ATM dan KTM.",
+    location: "SG-5",
+    locationDetail: "Dititipkan ke Penjaga SG",
+    status: "found",
+    reportedBy: "F52123083",
+    reporterName: "Safana Annisa",
+    date: "2026-05-07",
+    time: "08:30",
+    image: null,
+    contact: "safana.annisa@gmail.com",
+  },
+  {
+    id: "LF002",
+    title: "Charger Laptop ASUS",
+    description: "Charger laptop ASUS warna hitam tertinggal di meja paling belakang ruangan SG-3 setelah praktikum Basis Data.",
+    location: "SG-3",
+    locationDetail: "Dibawa Penemu",
+    status: "found",
+    reportedBy: "F55123043",
+    reporterName: "Aura Nayla Djokja",
+    date: "2026-05-06",
+    time: "14:00",
+    image: null,
+    contact: "085240000001",
+  },
+  {
+    id: "LF003",
+    title: "Earphone JBL Putih",
+    description: "Earphone JBL warna putih hilang saat saya keluar dari gedung SG, kemungkinan tertinggal di SG-8 atau di koridor lantai 2.",
+    location: "SG-8 / Koridor Lt.2",
+    locationDetail: null,
+    status: "lost",
+    reportedBy: "F55123015",
+    reporterName: "Octavia Ramadhani",
+    date: "2026-05-06",
+    time: "12:45",
+    image: null,
+    contact: "085240000002",
+  },
+  {
+    id: "LF004",
+    title: "Buku Catatan Algoritma",
+    description: "Buku tulis bersampul biru navy bertuliskan 'Algoritma' di covernya. Ditemukan di rak buku SG-6.",
+    location: "SG-6",
+    locationDetail: "Dititipkan ke Penjaga SG",
+    status: "claimed",
+    reportedBy: "F52123084",
+    reporterName: "Andini Artika",
+    date: "2026-05-05",
+    time: "16:00",
+    image: null,
+    contact: "andini.artika@gmail.com",
+  },
+];
+
+export const stats = {
+  totalRooms: 12,
+  availableRooms: 6,
+  occupiedRooms: 4,
+  endingSoon: 2,
+  pendingBookings: 3,
+  activeInventoryLoans: 2,
+  activeLostFound: 3,
+};
