@@ -4,7 +4,7 @@ import { lostFoundItems } from "../../data/mockData.js";
 
 const LOCATION_OPTIONS = ["SG-1","SG-2","SG-3","SG-4","SG-5","SG-6","SG-7","SG-8","SG-9","SG-10","SG-11","SG-12","Koridor Lantai 1","Koridor Lantai 2","Koridor Lantai 3","Area Lainnya"];
 
-function ItemCard({ item, onClaim }) {
+function ItemCard({ item, onClaim, onSelectItem }) {
   const [expanded, setExpanded] = useState(false);
 
   const statusIcons = { found: "📦", lost: "🔍", claimed: "✅" };
@@ -15,7 +15,8 @@ function ItemCard({ item, onClaim }) {
   };
 
   return (
-    <div className={`rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 ${item.status === "claimed" ? "opacity-70" : ""}`}>
+    <div 
+      className={`rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 ${item.status === "claimed" ? "opacity-70" : ""}`}>
       {/* Image Placeholder */}
       <div className={`h-36 bg-linear-to-br ${statusBg[item.status]} flex flex-col items-center justify-center border-b border-gray-100`}>
         <span className="text-4xl">{statusIcons[item.status]}</span>
@@ -63,18 +64,13 @@ function ItemCard({ item, onClaim }) {
           </div>
         </div>
 
-        {item.status !== "claimed" && (
-          <div className="mt-3 pt-3 border-t border-gray-50 flex gap-2">
-            <Button variant="ghost" size="sm" className="flex-1 justify-center text-xs">
-              💬 Hubungi
-            </Button>
-            {item.status === "found" && (
-              <Button variant="primary" size="sm" className="flex-1 justify-center text-xs" onClick={() => onClaim(item.id)}>
-                Itu Milik Saya
-              </Button>
-            )}
-          </div>
-        )}
+        <div className="mt-3 pt-3 border-t border-gray-50">
+          <button 
+            onClick={() => onSelectItem(item)}
+            className="w-full text-sm font-semibold text-blue-900 border-2 border-blue-900 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-150">
+            Detail
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -121,6 +117,8 @@ export default function StudentLostFound({ user }) {
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -174,13 +172,30 @@ export default function StudentLostFound({ user }) {
   };
 
   const handleClaim = (id) => {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, status: "claimed" } : i));
+    setItems(prev => prev.map(i => i.id === id ? { 
+      ...i, 
+      status: "claimed",
+      claimedBy: user.nim,
+      claimerName: user.name,
+      claimedDate: new Date().toLocaleDateString("sv-SE"),
+    } : i));
     showToast("Permintaan klaim dikirim. Silahkan hubungi penemu untuk proses pengambilan.", "info");
   };
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: null }));
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+    setShowDetailModal(true);
+  };
+
+  const handleClaimFromDetail = (id) => {
+    handleClaim(id);
+    setShowDetailModal(false);
+    setSelectedItem(null);
   };
 
   const filtered = items.filter(item => {
@@ -208,23 +223,8 @@ export default function StudentLostFound({ user }) {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Buat Laporan
+          Lapor Temuan / Kehilangan
         </Button>
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { key: "found", label: "Ditemukan", icon: "📦", color: "text-blue-600 bg-blue-50" },
-          { key: "lost",  label: "Hilang",    icon: "🔍", color: "text-red-600 bg-red-50" },
-          { key: "claimed", label: "Diklaim", icon: "✅", color: "text-emerald-600 bg-emerald-50" },
-        ].map(s => (
-          <div key={s.key} className={`rounded-2xl p-4 text-center ${s.color}`}>
-            <div className="text-2xl mb-1">{s.icon}</div>
-            <div className="text-xl font-extrabold">{counts[s.key]}</div>
-            <div className="text-xs font-medium opacity-80">{s.label}</div>
-          </div>
-        ))}
       </div>
 
       {/* Filter Tabs */}
@@ -259,7 +259,7 @@ export default function StudentLostFound({ user }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(item => (
-            <ItemCard key={item.id} item={item} onClaim={handleClaim} />
+            <ItemCard key={item.id} item={item} onClaim={handleClaim} onSelectItem={handleSelectItem} />
           ))}
         </div>
       )}
@@ -334,6 +334,105 @@ export default function StudentLostFound({ user }) {
           </div>
         </div>
       </Modal>
+
+      {/* Item Detail Modal */}
+      {selectedItem && (
+        <Modal isOpen={showDetailModal} onClose={() => { setShowDetailModal(false); setSelectedItem(null); }} title="Detail Barang">
+          <div className="space-y-6">
+            {/* Image Placeholder */}
+            <div className={`h-48 bg-linear-to-br ${selectedItem.status === "found" ? "from-blue-50 to-blue-100/50" : selectedItem.status === "lost" ? "from-red-50 to-red-100/50" : "from-gray-50 to-gray-100/50"} rounded-xl flex flex-col items-center justify-center border border-gray-200`}>
+              <span className="text-6xl">{selectedItem.status === "found" ? "📦" : selectedItem.status === "lost" ? "🔍" : "✅"}</span>
+              <span className="text-sm text-gray-500 mt-2 font-medium">{selectedItem.location}</span>
+            </div>
+
+            {/* Item Info */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">{selectedItem.title}</h3>
+                <div className="flex items-center gap-2">
+                  <Badge status={selectedItem.status} />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Deskripsi</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{selectedItem.description}</p>
+              </div>
+
+              {selectedItem.locationDetail && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 mb-1">Lokasi Detail</p>
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{selectedItem.locationDetail}</span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Dilaporkan Oleh</p>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>{selectedItem.reporterName}</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Tanggal & Waktu</p>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>{selectedItem.date} · {selectedItem.time}</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Kontak</p>
+                <p className="text-sm text-blue-600 font-medium">{selectedItem.contact}</p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            {selectedItem.status === "claimed" && (
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Diklaim Oleh</p>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{selectedItem.claimerName} ({selectedItem.claimedBy})</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Tanggal diklaim: {selectedItem.claimedDate}</p>
+              </div>
+            )}
+
+            {selectedItem.status !== "claimed" && (
+              <div className="border-t border-gray-100 pt-4 flex gap-3">
+                <Button variant="ghost" size="md" className="flex-1 justify-center">
+                  💬 Hubungi
+                </Button>
+                {selectedItem.status === "found" && (
+                  <Button variant="primary" size="md" className="flex-1 justify-center" onClick={() => handleClaimFromDetail(selectedItem.id)}>
+                    Itu Milik Saya
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {selectedItem.status === "claimed" && (
+              <div className="border-t border-gray-100 pt-4 text-center">
+                <p className="text-sm text-gray-600 font-medium">✅ Barang ini sudah diklaim oleh {selectedItem.claimerName}</p>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>

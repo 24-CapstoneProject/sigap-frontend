@@ -9,6 +9,9 @@ export const currentUser = {
   nim: "F55123064",
   role: "mahasiswa", // "mahasiswa" | "admin"
   prodi: "Teknik Informatika",
+  email: "syaif.ali@student.untad.ac.id",
+  phone: "081234567890",
+  address: "Jl. Pendidikan No. 123, Palu",
   avatar: "SR",
 };
 
@@ -165,6 +168,9 @@ export const lostFoundItems = [
     time: "16:00",
     image: null,
     contact: "andini.artika@gmail.com",
+    claimedBy: "F55123089",
+    claimerName: "Rindi Pratama",
+    claimedDate: "2026-05-07",
   },
 ];
 

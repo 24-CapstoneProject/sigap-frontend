@@ -58,7 +58,7 @@ function RoomCard({ room, onBook }) {
       {room.status === "available" && (
         <div className="mt-3">
           <Button variant="primary" size="sm" className="w-full justify-center" onClick={() => onBook(room)}>
-            Booking Sekarang
+            Booking Ruangan
           </Button>
         </div>
       )}

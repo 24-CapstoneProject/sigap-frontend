@@ -73,6 +73,18 @@ export default function AdminDashboard({ user, onNavigate }) {
   const approvedCount = allBookings.filter(b => b.status === "approved").length;
   const occupiedRooms = rooms.filter(r => r.status === "occupied").length;
 
+  // Calculate booking percentage
+  const totalCapacity = rooms.reduce((sum, room) => sum + room.capacity, 0);
+  const bookedCapacity = rooms
+    .filter(r => r.status === "occupied" || r.status === "ending_soon")
+    .reduce((sum, room) => sum + room.capacity, 0);
+  const bookingPercentage = Math.round((bookedCapacity / totalCapacity) * 100);
+
+  // Calculate infocus usage
+  const roomsWithProjector = rooms.filter(r => r.features.includes("Proyektor"));
+  const projectorUsed = roomsWithProjector.filter(r => r.status === "occupied" || r.status === "ending_soon");
+  const projectorPercentage = Math.round((projectorUsed.length / roomsWithProjector.length) * 100);
+
   const handleApprove = (id) => {
     setBookingRequests(prev => prev.filter(b => b.id !== id));
   };
@@ -107,36 +119,107 @@ export default function AdminDashboard({ user, onNavigate }) {
         <StatCard label="Total Ruangan" value={rooms.length} icon="📊" color="blue" />
       </div>
 
-      {/* Pending Booking Requests */}
-      <div className="bg-white rounded-2xl border border-gray-100">
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-gray-900">📋 Permohonan Peminjaman Menunggu</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Ajukan persetujuan atau penolakan</p>
+      {/* Room Schedule & Usage Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Jadwal Penggunaan Ruangan */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100">
+          <div className="p-5 border-b border-gray-100">
+            <h2 className="text-base font-bold text-gray-900">📋 Jadwal Penggunaan Ruangan</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Status penggunaan ruangan saat ini</p>
           </div>
-          <div className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold">
-            {bookingRequests.length} {bookingRequests.length === 1 ? "permintaan" : "permintaan"}
+          <div className="p-5 space-y-2 max-h-96 overflow-y-auto">
+            {rooms.map(room => (
+              <div key={room.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-sm font-bold text-blue-600">
+                    {room.name}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900">{room.name}</p>
+                    {room.status === "occupied" && (
+                      <p className="text-xs text-gray-500">{room.occupiedBy} (selesai {room.occupiedUntil})</p>
+                    )}
+                    {room.status === "ending_soon" && (
+                      <p className="text-xs text-amber-600">Akan selesai {room.occupiedUntil}</p>
+                    )}
+                    {room.status === "available" && (
+                      <p className="text-xs text-emerald-600">Tersedia</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {room.status === "occupied" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                      Terpakai
+                    </span>
+                  )}
+                  {room.status === "ending_soon" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                      <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                      Segera Selesai
+                    </span>
+                  )}
+                  {room.status === "available" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                      ✓ Tersedia
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="p-5">
-          {bookingRequests.length === 0 ? (
-            <div className="py-12 text-center text-gray-400">
-              <span className="text-4xl mb-3 block">✅</span>
-              <p className="text-sm">Semua permintaan peminjaman telah diproses</p>
+        {/* Usage Index Cards */}
+        <div className="space-y-4">
+          {/* Indeks Peminjaman */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Indeks Peminjaman</p>
+                <p className="text-2xl font-extrabold text-gray-900 mt-1">{bookingPercentage}%</p>
+              </div>
+              <div className="text-3xl">📊</div>
             </div>
-          ) : (
-            <div className="grid gap-3">
-              {bookingRequests.map(booking => (
-                <BookingRequestCard
-                  key={booking.id}
-                  booking={booking}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                />
-              ))}
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${bookingPercentage}%` }}
+              ></div>
             </div>
-          )}
+            <p className="text-xs text-gray-500 mt-2">
+              {bookedCapacity} dari {totalCapacity} kapasitas terpakai
+            </p>
+          </div>
+
+          {/* Penggunaan Infokus */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Penggunaan Infokus</p>
+                <p className="text-2xl font-extrabold text-gray-900 mt-1">{projectorPercentage}%</p>
+              </div>
+              <div className="text-3xl">📽️</div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${projectorPercentage}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {projectorUsed.length} dari {roomsWithProjector.length} infokus sedang digunakan
+            </p>
+          </div>
+
+          {/* Info Card */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 p-4">
+            <p className="text-xs font-semibold text-blue-900 mb-2">💡 Info</p>
+            <p className="text-xs text-blue-800 leading-relaxed">
+              {occupiedRooms} ruangan sedang aktif digunakan. {bookingRequests.length} permintaan menunggu persetujuan.
+            </p>
+          </div>
         </div>
       </div>
 

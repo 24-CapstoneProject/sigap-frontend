@@ -29,10 +29,15 @@ export default function App() {
   const [activePage, setActivePage] = useState("dashboard");
   const [user, setUser] = useState(null); // Start with null to show login
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showRoleChangeModal, setShowRoleChangeModal] = useState(false);
-  const [roleChangePassword, setRoleChangePassword] = useState("");
-  const [roleChangeError, setRoleChangeError] = useState("");
-  const [roleChangeAttempts, setRoleChangeAttempts] = useState(0);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [editedPhone, setEditedPhone] = useState("");
+  const [editedAddress, setEditedAddress] = useState("");
+  const [editedProdi, setEditedProdi] = useState("");
+  const [editedAvatar, setEditedAvatar] = useState("");
+  const [previewPhotoUrl, setPreviewPhotoUrl] = useState("");
 
   const handleLogin = (userData) => {
     setUser(userData);
@@ -44,65 +49,67 @@ export default function App() {
     setActivePage("dashboard");
   };
 
+  const handleEditProfile = () => {
+    if (user) {
+      setEditedName(user.name);
+      setEditedEmail(user.email || "");
+      setEditedPhone(user.phone || "");
+      setEditedAddress(user.address || "");
+      setEditedProdi(user.prodi || "");
+      setEditedAvatar(user.avatar || "");
+      setPreviewPhotoUrl("");
+      setIsEditingProfile(false);
+      setShowEditProfileModal(true);
+    }
+  };
+
+  const handleStartEditingProfile = () => {
+    setIsEditingProfile(true);
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPreviewPhotoUrl(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const presetAvatars = [
+    { initials: "SR", color: "from-blue-600 to-blue-800" },
+    { initials: "AB", color: "from-purple-600 to-purple-800" },
+    { initials: "CD", color: "from-green-600 to-green-800" },
+    { initials: "EF", color: "from-red-600 to-red-800" },
+    { initials: "GH", color: "from-pink-600 to-pink-800" },
+    { initials: "IJ", color: "from-indigo-600 to-indigo-800" },
+  ];
+
+  const handleSaveProfile = () => {
+    if (user) {
+      setUser(prev => ({
+        ...prev,
+        name: editedName,
+        email: editedEmail,
+        phone: editedPhone,
+        address: editedAddress,
+        prodi: editedProdi,
+        avatar: editedAvatar,
+      }));
+      setShowEditProfileModal(false);
+      setIsEditingProfile(false);
+      setPreviewPhotoUrl("");
+    }
+  };
+
   // If not authenticated, show login page
   if (!user) {
     return <LoginPage onLogin={handleLogin} />;
   }
 
-  // Request role change with security verification
-  const requestRoleChange = () => {
-    setShowRoleChangeModal(true);
-    setRoleChangePassword("");
-    setRoleChangeError("");
-    setRoleChangeAttempts(0);
-  };
 
-  // Verify password and toggle role
-  const verifyAndToggleRole = () => {
-    setRoleChangeError("");
-    
-    // Max 3 attempts
-    if (roleChangeAttempts >= 3) {
-      setRoleChangeError("Terlalu banyak percobaan yang salah. Coba lagi nanti.");
-      setTimeout(() => {
-        setShowRoleChangeModal(false);
-        setRoleChangePassword("");
-        setRoleChangeError("");
-        setRoleChangeAttempts(0);
-      }, 2000);
-      return;
-    }
-
-    // Verify password based on current role
-    const expectedPassword = user.role === "mahasiswa" ? "123456" : "admin123";
-    
-    if (roleChangePassword === expectedPassword) {
-      // Password correct - toggle role
-      setUser(prev => ({
-        ...prev,
-        role: prev.role === "mahasiswa" ? "admin" : "mahasiswa",
-        name: prev.role === "mahasiswa" ? "Penjaga SG Gedung" : "Syaif Ali M. Risal",
-        nim:  prev.role === "mahasiswa" ? "ADMIN-001" : "F55123064",
-        avatar: prev.role === "mahasiswa" ? "PS" : "SR",
-      }));
-      setActivePage("dashboard");
-      setShowRoleChangeModal(false);
-      setRoleChangePassword("");
-    } else {
-      // Password incorrect
-      const newAttempts = roleChangeAttempts + 1;
-      setRoleChangeAttempts(newAttempts);
-      setRoleChangeError(`Password salah. ${3 - newAttempts} percobaan tersisa.`);
-      setRoleChangePassword("");
-    }
-  };
-
-  // Handle Enter key in password input
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      verifyAndToggleRole();
-    }
-  };
 
   const renderPage = () => {
     if (user.role === "mahasiswa") {
@@ -135,6 +142,7 @@ export default function App() {
         user={user}
         isMobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
@@ -142,8 +150,8 @@ export default function App() {
         <Topbar
           activePage={activePage}
           user={user}
-          onToggleRole={requestRoleChange}
           onLogout={handleLogout}
+          onEditProfile={handleEditProfile}
           onMobileMenuOpen={() => setMobileMenuOpen(true)}
         />
 
@@ -152,76 +160,199 @@ export default function App() {
         </main>
       </div>
 
-      {/* Role Change Verification Modal */}
+      {/* View & Edit Profile Modal */}
       <Modal 
-        isOpen={showRoleChangeModal} 
+        isOpen={showEditProfileModal} 
         onClose={() => {
-          setShowRoleChangeModal(false);
-          setRoleChangePassword("");
-          setRoleChangeError("");
+          setShowEditProfileModal(false);
+          setPreviewPhotoUrl("");
+          setIsEditingProfile(false);
         }} 
-        title="🔐 Verifikasi Perubahan Role"
+        title="👤 Profil Saya"
       >
-        <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3.5 flex gap-3">
-            <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <div>
-              <p className="text-sm font-semibold text-blue-900">Perubahan Role Memerlukan Verifikasi</p>
-              <p className="text-xs text-blue-700 mt-1">Masukkan password akun Anda untuk mengkonfirmasi perubahan role.</p>
+        {!isEditingProfile ? (
+          // VIEW MODE
+          <div className="space-y-6">
+            {/* Photo Section */}
+            <div className="flex flex-col items-center">
+              <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${presetAvatars.find(a => a.initials === user.avatar)?.color || 'from-blue-600 to-blue-800'} flex items-center justify-center mb-3`}>
+                <span className="text-4xl font-bold text-white">{user.avatar}</span>
+              </div>
+            </div>
+
+            {/* Profile Info (Read Only) */}
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</p>
+                <p className="text-sm text-gray-900 font-medium">{user.name}</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Email</p>
+                <p className="text-sm text-gray-900 font-medium">{user.email || "-"}</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Nomor Telepon</p>
+                <p className="text-sm text-gray-900 font-medium">{user.phone || "-"}</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Prodi / Program Studi</p>
+                <p className="text-sm text-gray-900 font-medium">{user.prodi || "-"}</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Alamat</p>
+                <p className="text-sm text-gray-900 font-medium">{user.address || "-"}</p>
+              </div>
+
+              {/* Info Fields (Read Only) */}
+              <div className="bg-gray-50 p-4 rounded-xl space-y-2 border border-gray-100">
+                <p className="text-xs text-gray-600"><strong>NIM:</strong> {user.nim}</p>
+                <p className="text-xs text-gray-600 capitalize"><strong>Role:</strong> {user.role}</p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
+              <Button 
+                variant="secondary" 
+                onClick={() => {
+                  setShowEditProfileModal(false);
+                  setPreviewPhotoUrl("");
+                  setIsEditingProfile(false);
+                }}
+              >
+                Tutup
+              </Button>
+              <Button 
+                variant="primary" 
+                onClick={handleStartEditingProfile}
+              >
+                Edit Profile
+              </Button>
             </div>
           </div>
+        ) : (
+          // EDIT MODE
+          <div className="space-y-6">
+            {/* Photo Section */}
+            <div className="flex flex-col items-center">
+              {previewPhotoUrl ? (
+                <img src={previewPhotoUrl} alt="Preview" className="w-24 h-24 rounded-full object-cover mb-3" />
+              ) : (
+                <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${presetAvatars.find(a => a.initials === editedAvatar)?.color || 'from-blue-600 to-blue-800'} flex items-center justify-center mb-3`}>
+                  <span className="text-2xl font-bold text-white">{editedAvatar || user.avatar}</span>
+                </div>
+              )}
+              
+              <label className="w-full flex items-center justify-center px-3 py-2 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-400 transition-colors">
+                <span className="text-xs font-semibold text-gray-600">Ganti Foto</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
+              </label>
 
-          {roleChangeError && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-              <p className="text-xs text-red-700 font-medium">{roleChangeError}</p>
+              {/* Preset Avatar Options */}
+              <div className="mt-4 w-full">
+                <p className="text-xs font-semibold text-gray-600 mb-2">Atau Pilih Avatar</p>
+                <div className="flex gap-2 flex-wrap justify-center">
+                  {presetAvatars.map((avatar) => (
+                    <button
+                      key={avatar.initials}
+                      onClick={() => {
+                        setEditedAvatar(avatar.initials);
+                        setPreviewPhotoUrl("");
+                      }}
+                      className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-white font-bold transition-all ${editedAvatar === avatar.initials ? 'ring-2 ring-blue-500' : ''}`}
+                    >
+                      {avatar.initials}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Password Akun</label>
-            <input
-              type="password"
-              placeholder="Masukkan password Anda..."
-              value={roleChangePassword}
-              onChange={(e) => {
-                setRoleChangePassword(e.target.value);
-                if (roleChangeError) setRoleChangeError("");
-              }}
-              onKeyPress={handleKeyPress}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 placeholder:text-gray-400"
-              disabled={roleChangeAttempts >= 3}
-            />
-          </div>
+            {/* Profile Info */}
+            <div className="space-y-4 border-t border-gray-100 pt-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                <Input
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  placeholder="Masukkan nama lengkap"
+                />
+              </div>
 
-          <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-            <p className="text-xs text-amber-700">
-              <strong>💡 Untuk testing:</strong> Mahasiswa: 123456 | Admin: admin123
-            </p>
-          </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                <Input
+                  type="email"
+                  value={editedEmail}
+                  onChange={(e) => setEditedEmail(e.target.value)}
+                  placeholder="Masukkan email"
+                />
+              </div>
 
-          <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
-            <Button 
-              variant="secondary" 
-              onClick={() => {
-                setShowRoleChangeModal(false);
-                setRoleChangePassword("");
-                setRoleChangeError("");
-              }}
-              disabled={roleChangeAttempts >= 3}
-            >
-              Batal
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={verifyAndToggleRole}
-              disabled={roleChangeAttempts >= 3 || !roleChangePassword}
-            >
-              {roleChangeAttempts >= 3 ? "⏳ Coba Lagi Nanti" : "Verifikasi & Ganti Role"}
-            </Button>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nomor Telepon</label>
+                <Input
+                  value={editedPhone}
+                  onChange={(e) => setEditedPhone(e.target.value)}
+                  placeholder="Masukkan nomor telepon"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Prodi / Program Studi</label>
+                <Input
+                  value={editedProdi}
+                  onChange={(e) => setEditedProdi(e.target.value)}
+                  placeholder="Masukkan program studi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Alamat</label>
+                <textarea
+                  value={editedAddress}
+                  onChange={(e) => setEditedAddress(e.target.value)}
+                  placeholder="Masukkan alamat lengkap"
+                  rows="3"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 placeholder:text-gray-400 font-sans"
+                />
+              </div>
+
+              {/* Info Fields (Read Only) */}
+              <div className="bg-gray-50 p-4 rounded-xl space-y-2">
+                <p className="text-xs text-gray-600"><strong>NIM:</strong> {user.nim}</p>
+                <p className="text-xs text-gray-600 capitalize"><strong>Role:</strong> {user.role}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
+              <Button 
+                variant="secondary" 
+                onClick={() => {
+                  setIsEditingProfile(false);
+                }}
+              >
+                Kembali
+              </Button>
+              <Button 
+                variant="primary" 
+                onClick={handleSaveProfile}
+                disabled={!editedName.trim()}
+              >
+                Simpan Perubahan
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </Modal>
     </div>
   );
