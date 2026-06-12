@@ -134,7 +134,14 @@ export default function AdminUsers() {
   const validate = () => {
     const newErrors = {};
     if (!form.nim.trim()) newErrors.nim = "NIM wajib diisi.";
-    if (!form.email.trim()) newErrors.email = "Email wajib diisi.";
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email.trim()) {
+      newErrors.email = "Email wajib diisi.";
+    } else if (!emailRegex.test(form.email.trim())) {
+      newErrors.email = "Format email tidak valid (contoh: nama@email.com).";
+    }
+    
     if (!form.name.trim()) newErrors.name = "Nama wajib diisi.";
     if (form.password.trim() && form.password.trim() !== form.nim.trim() && form.password.length < 6) {
       newErrors.password = "Password minimal harus 6 karakter.";
@@ -257,7 +264,7 @@ export default function AdminUsers() {
       {/* SECTION: Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">👥 Manajemen Pengguna</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Manajemen Pengguna</h2>
           <p className="text-sm text-gray-500 mt-1">Kelola akun mahasiswa dan admin aplikasi</p>
         </div>
         
@@ -332,7 +339,7 @@ export default function AdminUsers() {
 
           {/* INPUT: Nama Lengkap */}
           <Input
-            label="👤 Nama Lengkap *"
+            label="Nama Lengkap *"
             type="text"
             placeholder="Masukkan nama lengkap"
             value={form.name}

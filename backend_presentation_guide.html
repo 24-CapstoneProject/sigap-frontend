@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Presentasi Backend - SIGAP</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;850&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            .no-print {
+                display: none;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl shadow-slate-100 border border-slate-100 rounded-3xl overflow-hidden">
+        
+        <!-- HEADER BANNER -->
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-850 p-8 sm:p-10 text-white relative">
+            <div class="absolute right-6 top-6 no-print">
+                <button onclick="window.print()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak / Simpan PDF
+                </button>
+            </div>
+            <span class="bg-blue-500/30 text-blue-100 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                Sidang Capstone Project 2026
+            </span>
+            <h1 class="text-3xl font-extrabold mt-4 mb-2 tracking-tight">Panduan Lengkap Presentasi Backend</h1>
+            <p class="text-blue-100 text-sm max-w-xl font-light">Sistem Informasi Gedung, Aset, dan Peminjaman (SIGAP) - Fakultas Teknik Universitas Tadulako</p>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="p-8 sm:p-10 space-y-10">
+            
+            <!-- SECTION 1 -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-xl font-bold text-slate-800">1. Konsep Dasar & Teknologi Stack</h2>
+                </div>
+                <p class="text-slate-650 text-sm leading-relaxed">
+                    Backend SIGAP menggunakan model <strong>RESTful API</strong> yang memisahkan logic server dengan tampilan antarmuka (frontend). Komunikasi data menggunakan format <strong>JSON</strong> melalui protokol HTTP.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse border border-slate-100 rounded-xl overflow-hidden">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-100">
+                                <th class="p-4">Teknologi</th>
+                                <th class="p-4">Komponen</th>
+                                <th class="p-4">Fungsi Utama</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">Node.js</td>
+                                <td class="p-4">Runtime</td>
+                                <td class="p-4">Lingkungan pengeksekusi kode JavaScript di sisi server.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">Express.js</td>
+                                <td class="p-4">Web Framework</td>
+                                <td class="p-4">Mengatur routing API, middleware, dan request/response lifecycle.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">MySQL (mysql2)</td>
+                                <td class="p-4">Database</td>
+                                <td class="p-4">Menyimpan data relasional dengan koneksi cepat berbasis Promise.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">JWT (JsonWebToken)</td>
+                                <td class="p-4">Authentication</td>
+                                <td class="p-4">Pengaman akses fitur berupa token terenkripsi.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">Bcryptjs</td>
+                                <td class="p-4">Password Hashing</td>
+                                <td class="p-4">Algoritma searah untuk mengamankan password di database.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">Multer</td>
+                                <td class="p-4">File Upload</td>
+                                <td class="p-4">Mengunggah gambar bukti peminjaman dan barang lost/found.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-blue-700">Xlsx (SheetJS)</td>
+                                <td class="p-4">Excel Engine</td>
+                                <td class="p-4">Membaca berkas import jadwal dan memproduksi laporan excel.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 2 -->
+            <section class="space-y-4 page-break">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-xl font-bold text-slate-800">2. Struktur Direktori Proyek (Folder Structure)</h2>
+                </div>
+                <p class="text-slate-650 text-sm leading-relaxed">
+                    Berikut adalah struktur direktori yang digunakan di bagian backend. Anda bisa menampilkan ini di VSCode untuk demo:
+                </p>
+                <div class="bg-slate-900 text-slate-200 p-5 rounded-2xl font-mono text-xs leading-relaxed">
+                    backend/<br>
+                    ├── config/             # Konfigurasi koneksi (Database connection pool)<br>
+                    ├── controllers/        # Logika bisnis utama (Pemrosesan data & query database)<br>
+                    ├── database/           # Cetak biru database (schema.sql & seed.sql)<br>
+                    ├── middleware/         # Filter keamanan (Auth token, Upload, Error handler)<br>
+                    ├── routes/             # Jalur URL API (Pemetaan endpoint & validator input)<br>
+                    ├── uploads/            # Direktori fisik penyimpanan file gambar/foto (.jpg, .png)<br>
+                    ├── utils/              # Fungsi pembantu (Token generator, Password hashing)<br>
+                    └── server.js           # Berkas utama (Entry point aplikasi)
+                </div>
+            </section>
+
+            <!-- SECTION 3 -->
+            <section class="space-y-6 page-break">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-xl font-bold text-slate-800">3. Penjelasan Alur Kerja Utama (Core Workflows)</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">A. Proses Keamanan Login (Auth Workflow)</h3>
+                    <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
+                        <li><strong>Registrasi</strong>: Password yang dimasukkan di-hash menggunakan algoritma <code>bcrypt</code> dengan 10 salt rounds sebelum disimpan ke database agar aman.</li>
+                        <li><strong>Login</strong>: Setelah verifikasi password berhasil, server membuat token JWT unik berisi data profil pengguna.</li>
+                        <li><strong>Otorisasi</strong>: Token ini dikirimkan kembali ke klien dan harus dikirim pada setiap request API terproteksi sebagai pembuktian akses yang sah.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">B. Alur Integrasi Peminjaman Ruang & Proyektor</h3>
+                    <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
+                        <li>Saat pengajuan disetujui (Approved) oleh Admin dan mahasiswa mencentang butuh proyektor, sistem secara otomatis akan mengurangi stok proyektor di database (-1).</li>
+                        <li>Entri peminjaman proyektor otomatis dibuat di log <code>inventory_loans</code>.</li>
+                        <li>Ketika dibatalkan atau selesai, stok proyektor otomatis bertambah kembali (+1).</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">C. Ekspor & Impor Excel</h3>
+                    <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
+                        <li><strong>Impor</strong>: Backend mengurai jadwal perkuliahan dari format Excel Untad, mendeteksi bentrok hari/jam, dan melakukan ekspansi tanggal otomatis per minggu sepanjang semester.</li>
+                        <li><strong>Ekspor</strong>: Menyajikan 3 lembar kerja dalam satu file Excel (Riwayat Peminjaman, Kondisi Barang, dan Data Barang) langsung diproses secara cepat dari memori RAM server.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION 4 -->
+            <section class="space-y-4 page-break">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-xl font-bold text-slate-800">4. Mekanisme Keamanan (Security Features)</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50/50 border border-blue-100 p-5 rounded-2xl">
+                        <h4 class="font-bold text-blue-900 text-sm mb-2">🛡️ SQL Injection Prevention</h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">Menggunakan Prepared Statements (?) pada driver <code>mysql2</code> sehingga seluruh query disaring terlebih dahulu sebelum dieksekusi.</p>
+                    </div>
+                    <div class="bg-indigo-50/50 border border-indigo-100 p-5 rounded-2xl">
+                        <h4 class="font-bold text-indigo-900 text-sm mb-2">🔑 Irreversible Password Hashing</h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">Password di-enkripsi secara searah menggunakan <code>bcrypt</code>, sehingga password asli tidak bisa dibaca walaupun database bocor.</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+                        <h4 class="font-bold text-slate-900 text-sm mb-2">🔒 Role-Based Access Control</h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">Jalur API admin diproteksi ketat menggunakan middleware <code>authorizeRole(['admin'])</code> sehingga mahasiswa tidak bisa mengakses data rahasia.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5 -->
+            <section class="space-y-6 page-break">
+                <div class="flex items-center gap-3 border-b border-slate-150 pb-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-xl font-bold text-slate-800">5. Prediksi Tanya-Jawab Sidang Capstone</h2>
+                </div>
+                
+                <!-- Q1 -->
+                <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-5 space-y-2">
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Pertanyaan 1</span>
+                    <h3 class="font-bold text-slate-800 text-sm">"Mengapa Anda memisahkan Frontend dan Backend secara terpisah?"</h3>
+                    <p class="text-slate-600 text-xs leading-relaxed pl-2 border-l-2 border-blue-500">
+                        <strong>Jawaban:</strong> Pemisahan ini menggunakan arsitektur Decoupled (Decoupled Architecture). Keuntungannya adalah jika frontend bermasalah, backend tetap berjalan mandiri. Beban kerja server juga lebih ringan karena proses rendering tampilan terjadi di sisi browser klien (Client-Side Rendering), bukan di server.
+                    </p>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-5 space-y-2">
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Pertanyaan 2</span>
+                    <h3 class="font-bold text-slate-800 text-sm">"Apa itu Connection Pooling pada database MySQL Anda?"</h3>
+                    <p class="text-slate-600 text-xs leading-relaxed pl-2 border-l-2 border-blue-500">
+                        <strong>Jawaban:</strong> Connection Pool adalah optimasi memori di mana server menyiapkan 10 koneksi database aktif yang terus menyala (<code>connectionLimit: 10</code>). Ketika ada request masuk, server tinggal meminjam koneksi yang ada alih-alih membuat koneksi TCP baru dari awal yang memakan waktu dan kinerja CPU.
+                    </p>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-5 space-y-2">
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Pertanyaan 3</span>
+                    <h3 class="font-bold text-slate-800 text-sm">"Bagaimana Anda menangani file sampah jika proses database gagal di tengah jalan?"</h3>
+                    <p class="text-slate-600 text-xs leading-relaxed pl-2 border-l-2 border-blue-500">
+                        <strong>Jawaban:</strong> Di dalam controller, proses simpan database dibungkus dengan blok <code>try-catch</code>. Jika database gagal (misal bentrok jadwal), blok <code>catch</code> akan memanggil helper <code>cleanupFile()</code> untuk menghapus file gambar bukti yang baru terunggah menggunakan <code>fs.unlinkSync()</code>, sehingga disk penyimpanan server tetap bersih.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="bg-slate-50 border-t border-slate-100 p-6 text-center text-xs text-slate-400">
+            © 2026 SIGAP Capstone Project Team • Universitas Tadulako
+        </div>
+    </div>
+</body>
+</html>
