@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge, Button, Input, Select, Modal, Toast } from "../../components/ui/index.jsx";
-import { lostFoundItems } from "../../data/mockData.js";
+import { API_BASE_URL, apiFetch } from "../../utils/api.js";
+import { mapLostFoundReport } from "../../utils/mappers.js";
 
-const LOCATION_OPTIONS = ["SG-1","SG-2","SG-3","SG-4","SG-5","SG-6","SG-7","SG-8","SG-9","SG-10","SG-11","SG-12","Koridor Lantai 1","Koridor Lantai 2","Koridor Lantai 3","Area Lainnya"];
+const LOCATION_OPTIONS = ["F.F 01","F.F 02","F.F 03","F.F 04","F.F 05","F.F 06","F.F 07","F.F 08","F.F 09","F.F 10","F.F 11","F.F 12","Koridor Lantai 1","Koridor Lantai 2","Area Lainnya"];
+
+const FOUND_TEMPLATE = `Ditemukan [Nama Barang] di sekitar [Lokasi] sekitar pukul [Waktu].\n\nBagi yang merasa pemilik dari barang ini, silakan hubungi kontak berikut untuk pengambilan:`;
+const LOST_TEMPLATE = `Telah hilang [Nama Barang] di sekitar daerah [Lokasi] pada pukul [Waktu].\nJika ada yang tidak sengaja menemukan atau mengamankannya, mohon hubungi kontak di bawah ini.`;
 
 function ItemCard({ item, onClaim, onSelectItem }) {
   const [expanded, setExpanded] = useState(false);
@@ -17,10 +21,24 @@ function ItemCard({ item, onClaim, onSelectItem }) {
   return (
     <div 
       className={`rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 ${item.status === "claimed" ? "opacity-70" : ""}`}>
-      {/* Image Placeholder */}
-      <div className={`h-36 bg-linear-to-br ${statusBg[item.status]} flex flex-col items-center justify-center border-b border-gray-100`}>
-        <span className="text-4xl">{statusIcons[item.status]}</span>
-        <span className="text-xs text-gray-400 mt-1 font-medium">{item.location}</span>
+      {/* Image or Placeholder */}
+      <div className="h-36 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-100 overflow-hidden relative">
+        {item.image ? (
+          <img 
+            src={`${API_BASE_URL}/uploads/${item.image}`} 
+            alt={item.title} 
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.style.display = "none";
+            }}
+          />
+        ) : (
+          <>
+            <span className="text-4xl">{statusIcons[item.status]}</span>
+            <span className="text-xs text-gray-400 mt-1 font-medium">{item.location}</span>
+          </>
+        )}
       </div>
 
       {/* Content */}
@@ -41,11 +59,17 @@ function ItemCard({ item, onClaim, onSelectItem }) {
         )}
 
         <div className="mt-3 space-y-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>Lokasi: <span className="font-semibold text-gray-800">{item.location}</span></span>
+          </div>
           {item.locationDetail && (
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{item.locationDetail}</span>
             </div>
@@ -85,7 +109,7 @@ function ImageUploadSimulator({ onImageSelect }) {
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result);
-      onImageSelect(file.name);
+      onImageSelect(file);
     };
     reader.readAsDataURL(file);
   };
@@ -113,23 +137,46 @@ function ImageUploadSimulator({ onImageSelect }) {
 }
 
 export default function StudentLostFound({ user }) {
-  const [items, setItems] = useState(lostFoundItems);
+  const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
     type: "found",
     location: "",
     locationDetail: "",
-    description: "",
+    description: FOUND_TEMPLATE,
     contact: "",
     imageName: "",
   });
   const [errors, setErrors] = useState({});
+
+  const loadItems = async () => {
+    const response = await apiFetch("/api/lostfound");
+    if (response.ok) {
+      const data = await response.json();
+      setItems((data.reports || []).map(mapLostFoundReport).filter((item) => item.rawStatus !== "archived"));
+    }
+  };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        await loadItems();
+      } catch (err) {
+        console.error("Failed to fetch lost & found items:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
@@ -140,55 +187,120 @@ export default function StudentLostFound({ user }) {
     const e = {};
     if (!form.title.trim())       e.title       = "Nama barang wajib diisi.";
     if (!form.location)           e.location    = "Pilih lokasi barang.";
+    if (form.location === "Area Lainnya" && !form.locationDetail.trim()) {
+      e.locationDetail = "Detail area wajib diisi.";
+    }
     if (!form.description.trim()) e.description = "Deskripsi barang wajib diisi.";
     if (!form.contact.trim())     e.contact     = "Kontak Anda wajib diisi.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
 
-    const newItem = {
-      id: `LF${Date.now()}`,
-      title: form.title,
-      description: form.description,
-      location: form.location,
-      locationDetail: form.type === "found" ? (form.locationDetail || "Dibawa Penemu") : null,
-      status: form.type,
-      reportedBy: user.nim,
-      reporterName: user.name.split(" ").slice(0, 2).join(" "),
-      date: new Date().toLocaleDateString("sv-SE"),
-      time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-      image: form.imageName || null,
-      contact: form.contact,
-    };
+    try {
+      const locationValue = form.location === "Area Lainnya" && form.locationDetail.trim()
+        ? `Area Lainnya (${form.locationDetail.trim()})`
+        : form.location;
 
-    setItems(prev => [newItem, ...prev]);
-    setForm({ title: "", type: "found", location: "", locationDetail: "", description: "", contact: "", imageName: "" });
-    setErrors({});
-    setShowForm(false);
-    showToast("Laporan berhasil dipublikasikan ke mading digital!", "success");
+      const formData = new FormData();
+      formData.append("type", form.type);
+      formData.append("itemName", form.title);
+      formData.append("description", form.description);
+      formData.append("location", locationValue);
+      formData.append("date", new Date().toISOString().split("T")[0]);
+      formData.append("category", form.type === "found" ? "Dititipkan di penjaga SG" : "Umum");
+      formData.append("contact", form.contact);
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const response = await apiFetch("/api/lostfound", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        await loadItems();
+
+        setForm({ title: "", type: "found", location: "", locationDetail: "", description: FOUND_TEMPLATE, contact: "", imageName: "" });
+        setImageFile(null);
+        setErrors({});
+        setShowForm(false);
+        showToast("✓ Laporan berhasil dipublikasikan ke mading digital!", "success");
+      } else {
+        const error = await response.json();
+        showToast(`✗ ${error.error || "Gagal membuat laporan"}`, "error");
+      }
+    } catch (err) {
+      console.error("Submit lost & found error:", err);
+      showToast("✗ Terjadi kesalahan saat mengirim laporan", "error");
+    }
   };
 
-  const handleClaim = (id) => {
-    setItems(prev => prev.map(i => i.id === id ? { 
-      ...i, 
-      status: "claimed",
-      claimedBy: user.nim,
-      claimerName: user.name,
-      claimedDate: new Date().toLocaleDateString("sv-SE"),
-    } : i));
-    showToast("Permintaan klaim dikirim. Silahkan hubungi penemu untuk proses pengambilan.", "info");
+  const handleClaim = async (id) => {
+    try {
+      const response = await apiFetch(`/api/lostfound/${id}/claim`, {
+        method: "POST",
+        body: JSON.stringify({ message: form.contact || "Saya ingin mengklaim barang ini." }),
+      });
+
+      if (response.ok) {
+        await loadItems();
+        showToast("✓ Permintaan klaim dikirim. Silahkan hubungi penemu untuk proses pengambilan.", "success");
+      } else {
+        showToast("✗ Gagal membuat klaim", "error");
+      }
+    } catch (err) {
+      console.error("Claim lost & found error:", err);
+      showToast("✗ Terjadi kesalahan", "error");
+    }
   };
 
   const handleChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(prev => {
+      const nextForm = { ...prev, [field]: value };
+      if (field === "location" && value !== "Area Lainnya") {
+        nextForm.locationDetail = "";
+      }
+      if (field === "type" && value === "lost") {
+        if (prev.description === FOUND_TEMPLATE || prev.description.trim() === "") {
+          nextForm.description = LOST_TEMPLATE;
+        }
+      } else if (field === "type" && value === "found") {
+        if (prev.description === LOST_TEMPLATE || prev.description.trim() === "") {
+          nextForm.description = FOUND_TEMPLATE;
+        }
+      }
+      return nextForm;
+    });
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: null }));
+    if (field === "location" && errors.locationDetail) {
+      setErrors(prev => ({ ...prev, locationDetail: null }));
+    }
   };
 
-  const handleSelectItem = (item) => {
-    setSelectedItem(item);
+  const handleSelectItem = async (item) => {
+    try {
+      const response = await apiFetch(`/api/lostfound/${item.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        const mappedReport = mapLostFoundReport(data.report);
+        const approvedClaim = (data.claims || []).find(c => c.status === "approved");
+        setSelectedItem({
+          ...mappedReport,
+          claimerName: approvedClaim ? approvedClaim.claimer_name : null,
+          claimedBy: approvedClaim ? approvedClaim.claimer_nim : null,
+          claimedDate: approvedClaim && approvedClaim.approved_at ? new Date(approvedClaim.approved_at).toLocaleDateString("id-ID") : null,
+        });
+      } else {
+        setSelectedItem(item);
+      }
+    } catch (err) {
+      console.error("Failed to fetch detail:", err);
+      setSelectedItem(item);
+    }
     setShowDetailModal(true);
   };
 
@@ -265,7 +377,7 @@ export default function StudentLostFound({ user }) {
       )}
 
       {/* Report Form Modal */}
-      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setErrors({}); }} title="Buat Laporan Barang" size="lg">
+      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setErrors({}); setForm({ title: "", type: "found", location: "", locationDetail: "", description: FOUND_TEMPLATE, contact: "", imageName: "" }); setImageFile(null); }} title="Buat Laporan Barang" size="lg">
         <div className="space-y-4">
 
           {/* Type Toggle */}
@@ -309,12 +421,12 @@ export default function StudentLostFound({ user }) {
               {LOCATION_OPTIONS.map(l => <option key={l} value={l}>{l}</option>)}
             </Select>
 
-            {form.type === "found" && (
-              <Select label="Status Barang Saat Ini" id="locationDetail" value={form.locationDetail}
-                onChange={e => handleChange("locationDetail", e.target.value)}>
-                <option value="Dibawa Penemu">Dibawa Penemu (Hubungi Saya)</option>
-                <option value="Dititipkan ke Penjaga SG">Dititipkan ke Penjaga SG</option>
-              </Select>
+            {form.location === "Area Lainnya" && (
+              <div className="sm:col-span-2">
+                <Input label="Detail Area Lainnya" id="locationDetail" required
+                  placeholder="Contoh: Samping kantin, depan toilet lantai 1, dekat tangga, dll."
+                  value={form.locationDetail} onChange={e => handleChange("locationDetail", e.target.value)} error={errors.locationDetail} />
+              </div>
             )}
 
             <div className="sm:col-span-2">
@@ -324,12 +436,12 @@ export default function StudentLostFound({ user }) {
             </div>
 
             <div className="sm:col-span-2">
-              <ImageUploadSimulator onImageSelect={name => handleChange("imageName", name)} />
+              <ImageUploadSimulator onImageSelect={file => { setImageFile(file); handleChange("imageName", file.name); }} />
             </div>
           </div>
 
           <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
-            <Button variant="secondary" onClick={() => { setShowForm(false); setErrors({}); }}>Batal</Button>
+            <Button variant="secondary" onClick={() => { setShowForm(false); setErrors({}); setForm({ title: "", type: "found", location: "", locationDetail: "", description: FOUND_TEMPLATE, contact: "", imageName: "" }); setImageFile(null); }}>Batal</Button>
             <Button variant="primary" onClick={handleSubmit}>Publikasikan Laporan</Button>
           </div>
         </div>
@@ -339,10 +451,20 @@ export default function StudentLostFound({ user }) {
       {selectedItem && (
         <Modal isOpen={showDetailModal} onClose={() => { setShowDetailModal(false); setSelectedItem(null); }} title="Detail Barang">
           <div className="space-y-6">
-            {/* Image Placeholder */}
-            <div className={`h-48 bg-linear-to-br ${selectedItem.status === "found" ? "from-blue-50 to-blue-100/50" : selectedItem.status === "lost" ? "from-red-50 to-red-100/50" : "from-gray-50 to-gray-100/50"} rounded-xl flex flex-col items-center justify-center border border-gray-200`}>
-              <span className="text-6xl">{selectedItem.status === "found" ? "📦" : selectedItem.status === "lost" ? "🔍" : "✅"}</span>
-              <span className="text-sm text-gray-500 mt-2 font-medium">{selectedItem.location}</span>
+            {/* Image or Placeholder */}
+            <div className="h-64 bg-linear-to-br from-gray-50 to-gray-100 rounded-xl flex flex-col items-center justify-center border border-gray-200 overflow-hidden relative">
+              {selectedItem.image ? (
+                <img 
+                  src={`${API_BASE_URL}/uploads/${selectedItem.image}`} 
+                  alt={selectedItem.title} 
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <>
+                  <span className="text-6xl">{selectedItem.status === "found" ? "📦" : selectedItem.status === "lost" ? "🔍" : "✅"}</span>
+                  <span className="text-sm text-gray-500 mt-2 font-medium">{selectedItem.location}</span>
+                </>
+              )}
             </div>
 
             {/* Item Info */}
@@ -359,13 +481,25 @@ export default function StudentLostFound({ user }) {
                 <p className="text-sm text-gray-700 leading-relaxed">{selectedItem.description}</p>
               </div>
 
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1">Lokasi</p>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{selectedItem.location}</span>
+                </div>
+              </div>
+
               {selectedItem.locationDetail && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-600 mb-1">Lokasi Detail</p>
+                  <p className="text-xs font-semibold text-gray-600 mb-1">
+                    {selectedItem.status === "found" ? "Status Barang Saat Ini" : "Lokasi Detail"}
+                  </p>
                   <div className="flex items-center gap-2 text-sm text-gray-700">
                     <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{selectedItem.locationDetail}</span>
                   </div>

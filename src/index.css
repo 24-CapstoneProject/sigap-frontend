@@ -1,1 +1,120 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  color: var(--color-gray-800);
+  background-color: var(--color-gray-50);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Ensure inputs, select, textarea and placeholders are fully readable in both modes */
+input, select, textarea, option {
+  color: var(--color-gray-900) !important;
+  background-color: var(--color-white) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-gray-400) !important;
+}
+
+/* Premium selection styling */
+::selection {
+  background-color: var(--color-blue-600);
+  color: #ffffff;
+}
+
+/* Override standard Tailwind v4 color variables for selector-based dark mode */
+.dark, html.dark {
+  --color-white: #1e293b; /* slate-800 */
+  --color-gray-50: #0b0f19; /* premium body background (almost black) */
+  --color-gray-100: #0f172a; /* slate-900 (inner element/badge/toggler background) */
+  --color-gray-200: #2d3748; /* slate-800/700 border */
+  --color-gray-300: #3b4b61; /* slate-700 border */
+  --color-gray-400: #475569; /* slate-600 */
+  --color-gray-500: #94a3b8; /* slate-400 */
+  --color-gray-600: #cbd5e1; /* slate-300 */
+  --color-gray-700: #e2e8f0; /* slate-200 */
+  --color-gray-800: #f1f5f9; /* slate-100 */
+  --color-gray-900: #ffffff; /* white */
+
+  /* Slate overrides for compatibility */
+  --color-slate-50: #0b0f19;
+  --color-slate-100: #0f172a;
+  --color-slate-200: #2d3748;
+  --color-slate-300: #3b4b61;
+  --color-slate-400: #475569;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #cbd5e1;
+  --color-slate-700: #e2e8f0;
+  --color-slate-800: #f1f5f9;
+  --color-slate-900: #ffffff;
+
+  /* Blue overrides for dark theme accents */
+  --color-blue-50: #172554;  /* blue-950 */
+  --color-blue-100: #1e3a8a; /* blue-900 */
+  --color-blue-200: #1d4ed8; /* blue-700 */
+  --color-blue-600: #60a5fa; /* blue-400 */
+  --color-blue-700: #93c5fd; /* blue-300 */
+  --color-blue-800: #bfdbfe; /* blue-200 */
+  --color-blue-900: #dbeafe; /* blue-100 */
+
+  /* Emerald overrides */
+  --color-emerald-50: #064e3b;
+  --color-emerald-100: #064e3b;
+  --color-emerald-200: #047857;
+  --color-emerald-700: #34d399;
+
+  /* Red overrides */
+  --color-red-50: #450a0a;
+  --color-red-100: #450a0a;
+  --color-red-200: #7f1d1d;
+  --color-red-700: #f87171;
+
+  /* Amber overrides */
+  --color-amber-50: #451a03;
+  --color-amber-100: #451a03;
+  --color-amber-200: #78350f;
+  --color-amber-700: #fbbf24;
+
+  /* Yellow overrides */
+  --color-yellow-50: #422006;
+  --color-yellow-100: #422006;
+  --color-yellow-200: #713f12;
+  --color-yellow-700: #facc15;
+
+  /* Orange overrides */
+  --color-orange-50: #431407;
+  --color-orange-100: #431407;
+  --color-orange-200: #7c2d12;
+  --color-orange-700: #fb923c;
+}
+
+/* Force all text-white to remain pure white in dark mode */
+.dark .text-white, html.dark .text-white {
+  color: #ffffff !important;
+}
+
+/* Force all text-white within hover/focus or children to inherit correctly */
+.dark svg.text-white, html.dark svg.text-white {
+  color: #ffffff !important;
+}
+
+/* Maintain bright count badges in tabs */
+.dark .bg-white\/20, html.dark .bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Form controls explicit styles in dark mode */
+.dark input, .dark select, .dark textarea, .dark option,
+html.dark input, html.dark select, html.dark textarea, html.dark option {
+  color: #ffffff !important;
+  background-color: #0f172a !important; /* dark slate-900 */
+  border-color: #3b4b61 !important; /* slate-700 border */
+}
+
+/* Placeholders in dark mode */
+.dark input::placeholder, .dark textarea::placeholder,
+html.dark input::placeholder, html.dark textarea::placeholder {
+  color: #94a3b8 !important; /* slate-400 */
+}

@@ -63,7 +63,7 @@ export default function LoginPage({ onLogin }) {
       {/* LEFT IMAGE */}
       <div className="hidden md:block w-1/2 relative">
         <img
-          src="/public/gedungteknik.jpg"
+          src="/gedungteknik.jpg"
           alt="Gedung"
           className="w-full h-full object-cover"
         />

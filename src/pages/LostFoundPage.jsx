@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Badge, Button, Input, Textarea, Modal, Toast, EmptyState } from "../components/ui/index.jsx";
 import { lostFoundItems } from "../data/mockData.js";
 
-const LOCATION_OPTIONS = ["SG-1","SG-2","SG-3","SG-4","SG-5","SG-6","SG-7","SG-8","SG-9","SG-10","SG-11","SG-12","Koridor Lantai 1","Koridor Lantai 2","Koridor Lantai 3","Area Lainnya"];
+const LOCATION_OPTIONS = ["F.F 01","F.F 02","F.F 03","F.F 04","F.F 05","F.F 06","F.F 07","F.F 08","F.F 09","F.F 10","F.F 11","F.F 12","Koridor Lantai 1","Koridor Lantai 2","Area Lainnya"];
 
 function ItemCard({ item, onClaim, isAdmin }) {
   const [expanded, setExpanded] = useState(false);
@@ -315,7 +315,7 @@ export default function LostFoundPage({ user }) {
 
             <div className="sm:col-span-2">
               <Input label="Kontak Anda" id="contact" required
-                placeholder="Nomor HP atau Email agar pemilik dapat menghubungi"
+                placeholder="Nomor HP atau Instagram agar pemilik dapat menghubungi"
                 value={form.contact} onChange={e => handleChange("contact", e.target.value)} error={errors.contact} />
             </div>
 

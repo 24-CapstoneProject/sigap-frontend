@@ -16,25 +16,25 @@ export const currentUser = {
 };
 
 export const rooms = [
-  { id: "SG-01", name: "SG-1", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-02", name: "SG-2", capacity: 40, floor: 1, status: "occupied", occupiedBy: "Rekayasa Perangkat Lunak", occupiedUntil: "10:00", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-03", name: "SG-3", capacity: 35, floor: 1, status: "ending_soon", occupiedBy: "Basis Data", occupiedUntil: "09:50", features: ["Proyektor", "AC"] },
-  { id: "SG-04", name: "SG-4", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-05", name: "SG-5", capacity: 30, floor: 2, status: "occupied", occupiedBy: "Jaringan Komputer", occupiedUntil: "11:30", features: ["Proyektor", "AC"] },
-  { id: "SG-06", name: "SG-6", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis", "Lab Komputer"] },
-  { id: "SG-07", name: "SG-7", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-08", name: "SG-8", capacity: 35, floor: 2, status: "occupied", occupiedBy: "Kecerdasan Buatan", occupiedUntil: "13:00", features: ["Proyektor", "AC"] },
-  { id: "SG-09", name: "SG-9", capacity: 40, floor: 3, status: "ending_soon", occupiedBy: "Sistem Operasi", occupiedUntil: "09:55", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-10", name: "SG-10", capacity: 40, floor: 3, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
-  { id: "SG-11", name: "SG-11", capacity: 30, floor: 3, status: "occupied", occupiedBy: "Pemrograman Web", occupiedUntil: "12:00", features: ["Proyektor", "AC", "Lab Komputer"] },
-  { id: "SG-12", name: "SG-12", capacity: 40, floor: 3, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 01", name: "F.F 01", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 02", name: "F.F 02", capacity: 40, floor: 1, status: "occupied", occupiedBy: "Rekayasa Perangkat Lunak", occupiedUntil: "10:00", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 03", name: "F.F 03", capacity: 35, floor: 1, status: "ending_soon", occupiedBy: "Basis Data", occupiedUntil: "09:50", features: ["Proyektor", "AC"] },
+  { id: "F.F 04", name: "F.F 04", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 05", name: "F.F 05", capacity: 30, floor: 1, status: "occupied", occupiedBy: "Jaringan Komputer", occupiedUntil: "11:30", features: ["Proyektor", "AC"] },
+  { id: "F.F 06", name: "F.F 06", capacity: 40, floor: 1, status: "available", features: ["Proyektor", "AC", "Papan Tulis", "Lab Komputer"] },
+  { id: "F.F 07", name: "F.F 07", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 08", name: "F.F 08", capacity: 35, floor: 2, status: "occupied", occupiedBy: "Kecerdasan Buatan", occupiedUntil: "13:00", features: ["Proyektor", "AC"] },
+  { id: "F.F 09", name: "F.F 09", capacity: 40, floor: 2, status: "ending_soon", occupiedBy: "Sistem Operasi", occupiedUntil: "09:55", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 10", name: "F.F 10", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
+  { id: "F.F 11", name: "F.F 11", capacity: 30, floor: 2, status: "occupied", occupiedBy: "Pemrograman Web", occupiedUntil: "12:00", features: ["Proyektor", "AC", "Lab Komputer"] },
+  { id: "F.F 12", name: "F.F 12", capacity: 40, floor: 2, status: "available", features: ["Proyektor", "AC", "Papan Tulis"] },
 ];
 
 export const bookingHistory = [
   {
     id: "BK001",
-    roomId: "SG-04",
-    roomName: "SG-4",
+    roomId: "F.F 04",
+    roomName: "F.F 04",
     mataKuliah: "Capstone Project",
     dosen: "Dr. Ir. Ahmad Fauzi, M.T.",
     tanggal: "2026-05-07",
@@ -46,8 +46,8 @@ export const bookingHistory = [
   },
   {
     id: "BK002",
-    roomId: "SG-07",
-    roomName: "SG-7",
+    roomId: "F.F 07",
+    roomName: "F.F 07",
     mataKuliah: "Rekayasa Sistem Lanjutan",
     dosen: "Dr. Siti Rahma, S.Kom., M.Cs.",
     tanggal: "2026-05-08",
@@ -59,8 +59,8 @@ export const bookingHistory = [
   },
   {
     id: "BK003",
-    roomId: "SG-02",
-    roomName: "SG-2",
+    roomId: "F.F 02",
+    roomName: "F.F 02",
     mataKuliah: "Pemrograman Mobile",
     dosen: "Andi Wahyudi, M.Kom.",
     tanggal: "2026-05-06",
@@ -76,8 +76,8 @@ export const bookingHistory = [
 export const allBookings = [
   {
     id: "BK010",
-    roomId: "SG-01",
-    roomName: "SG-1",
+    roomId: "F.F 01",
+    roomName: "F.F 01",
     mataKuliah: "Sistem Informasi Manajemen",
     dosen: "Prof. Hariyanto, Ph.D.",
     tanggal: "2026-05-07",
@@ -89,8 +89,8 @@ export const allBookings = [
   },
   {
     id: "BK011",
-    roomId: "SG-06",
-    roomName: "SG-6",
+    roomId: "F.F 06",
+    roomName: "F.F 06",
     mataKuliah: "Algoritma dan Pemrograman",
     dosen: "Rina Susanti, M.T.",
     tanggal: "2026-05-07",
@@ -116,8 +116,8 @@ export const lostFoundItems = [
   {
     id: "LF001",
     title: "Dompet Kulit Coklat",
-    description: "Ditemukan di bangku depan sebelah kiri ruangan SG-5. Berisi beberapa kartu ATM dan KTM.",
-    location: "SG-5",
+    description: "Ditemukan di bangku depan sebelah kiri ruangan F.F 05. Berisi beberapa kartu ATM dan KTM.",
+    location: "F.F 05",
     locationDetail: "Dititipkan ke Penjaga SG",
     status: "found",
     reportedBy: "F52123083",
@@ -130,8 +130,8 @@ export const lostFoundItems = [
   {
     id: "LF002",
     title: "Charger Laptop ASUS",
-    description: "Charger laptop ASUS warna hitam tertinggal di meja paling belakang ruangan SG-3 setelah praktikum Basis Data.",
-    location: "SG-3",
+    description: "Charger laptop ASUS warna hitam tertinggal di meja paling belakang ruangan F.F 03 setelah praktikum Basis Data.",
+    location: "F.F 03",
     locationDetail: "Dibawa Penemu",
     status: "found",
     reportedBy: "F55123043",
@@ -144,8 +144,8 @@ export const lostFoundItems = [
   {
     id: "LF003",
     title: "Earphone JBL Putih",
-    description: "Earphone JBL warna putih hilang saat saya keluar dari gedung SG, kemungkinan tertinggal di SG-8 atau di koridor lantai 2.",
-    location: "SG-8 / Koridor Lt.2",
+    description: "Earphone JBL warna putih hilang saat saya keluar dari gedung SG, kemungkinan tertinggal di F.F 08 atau di koridor lantai 2.",
+    location: "F.F 08 / Koridor Lt.2",
     locationDetail: null,
     status: "lost",
     reportedBy: "F55123015",
@@ -158,8 +158,8 @@ export const lostFoundItems = [
   {
     id: "LF004",
     title: "Buku Catatan Algoritma",
-    description: "Buku tulis bersampul biru navy bertuliskan 'Algoritma' di covernya. Ditemukan di rak buku SG-6.",
-    location: "SG-6",
+    description: "Buku tulis bersampul biru navy bertuliskan 'Algoritma' di covernya. Ditemukan di rak buku F.F 06.",
+    location: "F.F 06",
     locationDetail: "Dititipkan ke Penjaga SG",
     status: "claimed",
     reportedBy: "F52123084",

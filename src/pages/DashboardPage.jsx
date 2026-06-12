@@ -92,7 +92,7 @@ export default function DashboardPage({ user, onNavigate }) {
         </div>
         <div className="relative">
           <p className="text-blue-200 text-sm font-medium mb-1">Selamat datang kembali,</p>
-          <h2 className="text-2xl font-extrabold">{user.name.split(" ")[0]} 👋</h2>
+          <h2 className="text-2xl font-extrabold">{user.name.split(" ")[0]} </h2>
           <p className="text-blue-200 text-sm mt-1">{user.nim} · {user.prodi}</p>
         </div>
       </div>
@@ -123,7 +123,6 @@ export default function DashboardPage({ user, onNavigate }) {
               <option value="all">Semua Lantai</option>
               <option value="1">Lantai 1</option>
               <option value="2">Lantai 2</option>
-              <option value="3">Lantai 3</option>
             </select>
             {/* Status Filter */}
             {["all", "available", "occupied", "ending_soon"].map(s => (

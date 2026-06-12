@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { Button, Input } from "../../components/ui/index.jsx";
+import { loginRequest, clearAuthSession } from "../../utils/api.js";
 
-export default function LoginPage({ onLogin }) {
+export default function LoginPage({ onLogin, onCancel }) {
   const [loginType, setLoginType] = useState("mahasiswa");
   const [formData, setFormData] = useState({
     nim: "",
     password: "",
     username: "",
-    adminPassword: ""
+    adminPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError("");
   };
 
@@ -22,36 +23,34 @@ export default function LoginPage({ onLogin }) {
     setLoading(true);
     setError("");
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      if (loginType === "mahasiswa") {
-        if (formData.nim === "F55123015" && formData.password === "123456") {
-          onLogin({
-            id: "U001",
-            name: "Octavia Ramadhani",
-            nim: "F55123015",
-            role: "mahasiswa",
-            prodi: "Teknik Informatika",
-            avatar: "SR",
-          });
-        } else {
-          setError("NIM atau password salah");
-        }
-      } else {
-        if (formData.username === "admin" && formData.adminPassword === "admin123") {
-          onLogin({
-            id: "A001",
-            name: "Penjaga SG Gedung",
-            role: "admin",
-            avatar: "PS",
-          });
-        } else {
-          setError("Username atau password salah");
-        }
+      const identifier = loginType === "mahasiswa" ? formData.nim : formData.username;
+      const password = loginType === "mahasiswa" ? formData.password : formData.adminPassword;
+
+      const data = await loginRequest(identifier, password);
+
+      if (loginType === "admin" && data.user.role !== "admin") {
+        clearAuthSession();
+        throw new Error("Akun Anda tidak memiliki hak akses sebagai Administrator.");
       }
-    } catch {
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+
+      if (loginType === "mahasiswa" && data.user.role !== "mahasiswa") {
+        clearAuthSession();
+        throw new Error("Akun Anda tidak terdaftar sebagai Mahasiswa.");
+      }
+
+      onLogin({
+        id: data.user.id,
+        name: data.user.name,
+        nim: data.user.nim,
+        email: data.user.email,
+        role: data.user.role,
+        prodi: data.user.prodi || (loginType === "admin" ? "Command Center" : "Teknik Informatika"),
+        avatar: data.user.name?.substring(0, 2).toUpperCase() || (loginType === "admin" ? "AD" : "SR"),
+      });
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Terjadi kesalahan koneksi jaringan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -59,15 +58,13 @@ export default function LoginPage({ onLogin }) {
 
   return (
     <div className="min-h-screen flex bg-gray-100">
-      
       {/* LEFT IMAGE */}
       <div className="hidden md:block w-1/2 relative">
         <img
-          src="/public/gedungteknik.jpg"
+          src="/gedungteknik.jpg"
           alt="Gedung"
           className="w-full h-full object-cover"
         />
-
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/50 flex items-center px-12">
           <div className="text-white max-w-lg">
@@ -85,13 +82,25 @@ export default function LoginPage({ onLogin }) {
       {/* RIGHT FORM */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-white">
         <div className="w-full max-w-md">
-
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="text-xs text-blue-600 hover:text-blue-800 font-semibold mb-4 flex items-center gap-1 cursor-pointer"
+            >
+              ← Kembali ke Jadwal Ruangan
+            </button>
+          )}
+          {/* Logo */}
+          <div className="mb-6">
+            <img src="/logo.png" alt="SIGAP Logo" className="h-10 object-contain" />
+          </div>
           {/* Title */}
           <h2 className="text-2xl font-semibold text-gray-800 mb-1">
             Portal Login
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Access the Facility Management Command Center
+            Manajemen Pengguna Sigap
           </p>
 
           {/* Toggle */}
@@ -105,7 +114,7 @@ export default function LoginPage({ onLogin }) {
                   : "text-gray-600 hover:text-gray-700"
               }`}
             >
-              👤 Mahasiswa
+              Mahasiswa
             </button>
             <button
               type="button"
@@ -116,29 +125,27 @@ export default function LoginPage({ onLogin }) {
                   : "text-gray-600 hover:text-gray-700"
               }`}
             >
-              🛡️ Admin
+              Admin
             </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">
-            {/* Error */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3">
                 <p className="text-xs text-red-600 font-medium">{error}</p>
               </div>
             )}
 
-            {/* Mahasiswa Form */}
             {loginType === "mahasiswa" && (
               <>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                    📚 NIM Mahasiswa
+                    Username
                   </label>
                   <Input
                     type="text"
-                    placeholder="Contoh: F55123015"
+                    placeholder="Masukkan NIM Anda"
                     value={formData.nim}
                     onChange={(e) => handleInputChange("nim", e.target.value)}
                     disabled={loading}
@@ -147,33 +154,28 @@ export default function LoginPage({ onLogin }) {
 
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                    🔐 Password
+                    Password
                   </label>
                   <Input
                     type="password"
-                    placeholder="Masukkan password"
+                    placeholder="Masukkan password Anda"
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
                     disabled={loading}
                   />
                 </div>
-
-                <p className="text-[11px] text-gray-400 -mt-2">
-                  📝 Demo: F55123015 / 123456
-                </p>
               </>
             )}
 
-            {/* Admin Form */}
             {loginType === "admin" && (
               <>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                    👤 Username Admin
+                    Username
                   </label>
                   <Input
                     type="text"
-                    placeholder="Masukkan username"
+                    placeholder="Masukkan username Anda"
                     value={formData.username}
                     onChange={(e) => handleInputChange("username", e.target.value)}
                     disabled={loading}
@@ -182,20 +184,16 @@ export default function LoginPage({ onLogin }) {
 
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                    🔐 Password Admin
+                    Password 
                   </label>
                   <Input
                     type="password"
-                    placeholder="Masukkan password"
+                    placeholder="Masukkan password Anda"
                     value={formData.adminPassword}
                     onChange={(e) => handleInputChange("adminPassword", e.target.value)}
                     disabled={loading}
                   />
                 </div>
-
-                <p className="text-[11px] text-gray-400 -mt-2">
-                  📝 Demo: admin / admin123
-                </p>
               </>
             )}
 
@@ -206,13 +204,13 @@ export default function LoginPage({ onLogin }) {
               className="w-full justify-center"
               disabled={loading}
             >
-              {loading ? "⏳ Menyambungkan..." : "🚀 Masuk"}
+              {loading ? "⏳ Menyambungkan..." : "Masuk"}
             </Button>
           </form>
 
           {/* Footer */}
           <p className="text-[11px] text-gray-400 text-center mt-4">
-            © 2026 SIGAP • Universitas Tadulako • Gedung SG
+            © 2026 SIGAP [24 - Capstone Project] • Universitas Tadulako • Gedung SG
           </p>
         </div>
       </div>
