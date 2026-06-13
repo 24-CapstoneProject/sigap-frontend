@@ -347,14 +347,14 @@ export default function AdminUsers() {
             error={errors.name}
           />
 
-          {/* INPUT: Password */}
+          {/* INPUT: Password (Locked to NIM as Default) */}
           <Input
-            label="🔐 Password Default (Otomatis terisi NIM) *"
+            label="🔐 Password Default (Terkunci ke NIM)"
             type="text"
-            placeholder="Password awal mahasiswa (Default: NIM)"
-            value={form.password}
-            onChange={(e) => handleInputChange("password", e.target.value)}
-            error={errors.password}
+            value={form.nim || ""}
+            disabled={true}
+            className="bg-gray-150 cursor-not-allowed text-gray-500 font-semibold"
+            placeholder="Otomatis menggunakan NIM"
           />
 
           {/* INPUT: Program Studi */}
