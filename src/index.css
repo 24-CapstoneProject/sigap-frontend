@@ -2,6 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --color-gray-50: #F8F9FF;
+}
+
 body {
   color: var(--color-gray-800);
   background-color: var(--color-gray-50);
@@ -31,25 +35,12 @@ input::placeholder, textarea::placeholder {
   --color-gray-100: #0f172a; /* slate-900 (inner element/badge/toggler background) */
   --color-gray-200: #2d3748; /* slate-800/700 border */
   --color-gray-300: #3b4b61; /* slate-700 border */
-  --color-gray-400: #475569; /* slate-600 */
-  --color-gray-500: #94a3b8; /* slate-400 */
-  --color-gray-600: #cbd5e1; /* slate-300 */
-  --color-gray-700: #e2e8f0; /* slate-200 */
-  --color-gray-800: #f1f5f9; /* slate-100 */
+  --color-gray-400: #94a3b8; /* slate-400 */
+  --color-gray-500: #cbd5e1; /* slate-300 */
+  --color-gray-600: #e2e8f0; /* slate-200 */
+  --color-gray-700: #f1f5f9; /* slate-100 */
+  --color-gray-800: #f8fafc; /* slate-50 */
   --color-gray-900: #ffffff; /* white */
-
-  /* Slate overrides for compatibility */
-  --color-slate-50: #0b0f19;
-  --color-slate-100: #0f172a;
-  --color-slate-200: #2d3748;
-  --color-slate-300: #3b4b61;
-  --color-slate-400: #475569;
-  --color-slate-500: #94a3b8;
-  --color-slate-600: #cbd5e1;
-  --color-slate-700: #e2e8f0;
-  --color-slate-800: #f1f5f9;
-  --color-slate-900: #ffffff;
-
   /* Blue overrides for dark theme accents */
   --color-blue-50: #172554;  /* blue-950 */
   --color-blue-100: #1e3a8a; /* blue-900 */
@@ -90,13 +81,15 @@ input::placeholder, textarea::placeholder {
   --color-orange-700: #fb923c;
 }
 
-/* Force all text-white to remain pure white in dark mode */
-.dark .text-white, html.dark .text-white {
+/* Force all text-white and dark:text-white to remain pure white in dark mode */
+.dark .text-white, html.dark .text-white,
+.dark .dark\:text-white, html.dark .dark\:text-white {
   color: #ffffff !important;
 }
 
 /* Force all text-white within hover/focus or children to inherit correctly */
-.dark svg.text-white, html.dark svg.text-white {
+.dark svg.text-white, html.dark svg.text-white,
+.dark svg.dark\:text-white, html.dark svg.dark\:text-white {
   color: #ffffff !important;
 }
 
@@ -117,4 +110,19 @@ html.dark input, html.dark select, html.dark textarea, html.dark option {
 .dark input::placeholder, .dark textarea::placeholder,
 html.dark input::placeholder, html.dark textarea::placeholder {
   color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Custom buttons for Help Center */
+.btn-primary-blue {
+  background-color: #00274d !important;
+  color: #ffffff !important;
+}
+.btn-primary-blue:hover {
+  background-color: #001f3f !important;
+}
+.dark .btn-primary-blue {
+  background-color: #003366 !important;
+}
+.dark .btn-primary-blue:hover {
+  background-color: #004080 !important;
 }

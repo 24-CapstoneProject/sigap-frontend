@@ -31,7 +31,7 @@ export default function PublicCalendarPage({ onLoginClick }) {
       </header>
 
       {/* MAIN CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full px-4 lg:px-6 py-8">
         
         {/* HERO BANNER */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden mb-8 shadow-lg shadow-blue-600/10">

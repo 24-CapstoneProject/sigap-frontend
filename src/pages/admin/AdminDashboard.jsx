@@ -3,23 +3,24 @@ import { Badge, Button } from "../../components/ui/index.jsx";
 import { apiFetch } from "../../utils/api.js";
 import { mapBooking, mapRoomForDashboard } from "../../utils/mappers.js";
 
-function StatCard({ label, value, icon, color }) {
-  const colors = {
-    blue: "from-blue-500 to-blue-700 shadow-blue-200",
-    emerald: "from-emerald-500 to-emerald-700 shadow-emerald-200",
-    red: "from-red-500 to-red-700 shadow-red-200",
-    amber: "from-amber-400 to-amber-600 shadow-amber-200",
+function StatCard({ label, value, sublabel, icon, color }) {
+  const bgColors = {
+    amber: "bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400",
+    emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400",
+    red: "bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400",
+    blue: "bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400",
   };
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-all duration-200 hover:shadow-md group">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-          <p className="text-3xl font-extrabold text-gray-900">{value}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700/80 shadow-xs flex items-center justify-between transition-all duration-200">
+      <div className="space-y-1.5">
+        <p className="text-[10px] lg:text-xs font-bold text-blue-900/60 dark:text-slate-400 uppercase tracking-widest">{label}</p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-extrabold text-gray-900 dark:text-white leading-none">{value}</span>
+          <span className="text-xs text-gray-400 dark:text-slate-400 font-medium">{sublabel}</span>
         </div>
-        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-200`}>
-          <span className="text-white text-lg">{icon}</span>
-        </div>
+      </div>
+      <div className={`w-12 h-12 rounded-2xl ${bgColors[color]} flex items-center justify-center shrink-0`}>
+        {icon}
       </div>
     </div>
   );
@@ -31,28 +32,28 @@ function BookingRequestCard({ booking, onApprove, onReject }) {
     : "-";
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-gray-200 hover:shadow-md transition-all duration-200">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200/60 dark:border-slate-700/80 p-5 hover:shadow-md transition-all duration-200">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-1">📋 {booking.mataKuliah}</p>
-          <p className="text-sm font-bold text-gray-900">{booking.nama}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{booking.nim}</p>
+          <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 mb-1">📋 {booking.mataKuliah}</p>
+          <p className="text-sm font-bold text-gray-900 dark:text-white">{booking.nama}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-450 mt-0.5">{booking.nim}</p>
         </div>
         <Badge status={booking.status} />
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-3 mb-3 space-y-1">
+      <div className="bg-gray-50 dark:bg-slate-900/30 rounded-xl p-3.5 mb-3.5 space-y-1.5">
         <div className="flex justify-between text-xs">
-          <span className="text-gray-600">Ruangan:</span>
-          <span className="font-semibold text-gray-800">{booking.roomName}</span>
+          <span className="text-gray-600 dark:text-slate-400">Ruangan:</span>
+          <span className="font-semibold text-gray-800 dark:text-slate-200">{booking.roomName}</span>
         </div>
         <div className="flex justify-between text-xs">
-          <span className="text-gray-600">Tanggal:</span>
-          <span className="font-semibold text-gray-800">{booking.tanggal}</span>
+          <span className="text-gray-600 dark:text-slate-400">Tanggal:</span>
+          <span className="font-semibold text-gray-800 dark:text-slate-200">{booking.tanggal}</span>
         </div>
         <div className="flex justify-between text-xs">
-          <span className="text-gray-600">Jam:</span>
-          <span className="font-semibold text-gray-800">{booking.jamMulai} - {endHour}</span>
+          <span className="text-gray-600 dark:text-slate-400">Jam:</span>
+          <span className="font-semibold text-gray-800 dark:text-slate-200">{booking.jamMulai} - {endHour}</span>
         </div>
       </div>
 
@@ -133,73 +134,107 @@ export default function AdminDashboard({ user, onNavigate }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-full opacity-10">
-          <svg viewBox="0 0 200 200" className="w-full h-full">
-            <circle cx="150" cy="50" r="80" fill="white" />
-            <circle cx="50" cy="150" r="60" fill="white" />
-          </svg>
-        </div>
-        <div className="relative">
-          <p className="text-purple-200 text-sm font-medium mb-1">Selamat datang kembali,</p>
-          <h2 className="text-2xl font-extrabold">{user.name} </h2>
-          <p className="text-purple-200 text-sm mt-1">Admin Panel • Manajemen Fasilitas Gedung SG</p>
-        </div>
+      
+      {/* 4 Stat Cards Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard 
+          label="Permintaan Tertunda" 
+          value={pendingBookings.length} 
+          sublabel="Awaiting Review" 
+          icon={(
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8V4H8v4c0 2.21 1.79 4 4 4s4-1.79 4-4V4h-4zm0 8v4H8v-4c0-2.21 1.79-4 4-4s4 1.79 4 4v4h-4z" />
+            </svg>
+          )} 
+          color="amber" 
+        />
+        <StatCard 
+          label="Disetujui Hari Ini" 
+          value={approvedToday} 
+          sublabel="Requests Processed" 
+          icon={(
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />
+            </svg>
+          )} 
+          color="emerald" 
+        />
+        <StatCard 
+          label="Ruangan Digunakan" 
+          value={occupiedRooms} 
+          sublabel="In-use Now" 
+          icon={(
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          )} 
+          color="red" 
+        />
+        <StatCard 
+          label="Ruangan Tersedia" 
+          value={availableRooms} 
+          sublabel="Vacant Spaces" 
+          icon={(
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          )} 
+          color="blue" 
+        />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Permintaan Tertunda" value={pendingBookings.length} icon="⏳" color="amber" />
-        <StatCard label="Disetujui Hari Ini" value={approvedToday} icon="✅" color="emerald" />
-        <StatCard label="Ruangan Digunakan" value={occupiedRooms} icon="🏛️" color="red" />
-        <StatCard label="Ruangan Tersedia" value={availableRooms} icon="📊" color="blue" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100">
-          <div className="p-5 border-b border-gray-100">
-            <h2 className="text-base font-bold text-gray-900">📋 Jadwal Penggunaan Ruangan</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Status ruangan berdasarkan peminjaman yang disetujui hari ini</p>
+      {/* Main Grid: Rooms Schedule vs Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Left Column: Room Schedules */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/60 dark:border-slate-700/80 shadow-xs flex flex-col justify-between">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700/60">
+            <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <span className="text-blue-600">📅</span> Jadwal Penggunaan Ruangan
+            </h2>
+            <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Status ruangan berdasarkan peminjaman yang disetujui hari ini</p>
           </div>
-          <div className="p-5 space-y-2 max-h-96 overflow-y-auto">
+          
+          <div className="p-6 space-y-4 max-h-[500px] overflow-y-auto divide-y divide-gray-100 dark:divide-slate-700/60">
             {loading ? (
               <p className="text-sm text-gray-400 text-center py-8">Memuat data ruangan...</p>
             ) : rooms.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-8">Belum ada data ruangan.</p>
             ) : (
               rooms.map((room) => (
-                <div key={room.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-sm font-bold text-blue-600">
+                <div key={room.id} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
+                  <div className="flex items-center gap-3.5 flex-1">
+                    <div className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs lg:text-sm select-none shrink-0 border border-blue-100/50 dark:border-blue-900/20">
                       {room.name}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900">{room.name}</p>
+                      <p className="text-sm lg:text-base font-bold text-gray-900 dark:text-white truncate">{room.name}</p>
                       {room.status === "occupied" && (
-                        <p className="text-xs text-gray-500">{room.occupiedBy} (selesai {room.occupiedUntil})</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-450 truncate">{room.occupiedBy} (selesai {room.occupiedUntil})</p>
                       )}
                       {room.status === "ending_soon" && (
-                        <p className="text-xs text-amber-600">Akan selesai {room.occupiedUntil}</p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400 truncate">Akan selesai {room.occupiedUntil}</p>
                       )}
                       {room.status === "available" && (
-                        <p className="text-xs text-emerald-600">Tersedia</p>
+                        <p className="text-xs text-gray-400 dark:text-slate-400 truncate">Kapasitas: {room.capacity} Orang</p>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     {room.status === "occupied" && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30">
                         <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
                         Terpakai
                       </span>
                     )}
                     {room.status === "ending_soon" && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/30">
                         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
                         Segera Selesai
                       </span>
                     )}
                     {room.status === "available" && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
                         ✓ Tersedia
                       </span>
                     )}
@@ -210,64 +245,86 @@ export default function AdminDashboard({ user, onNavigate }) {
           </div>
         </div>
 
+        {/* Right Column: Loan Index, Projector Usage & Info card */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="flex items-center justify-between mb-3">
+          
+          {/* Loan Index Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/60 dark:border-slate-700/80 p-6 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Indeks Peminjaman</p>
-                <p className="text-2xl font-extrabold text-gray-900 mt-1">{bookingPercentage}%</p>
+                <p className="text-[10px] lg:text-xs font-bold text-blue-900/60 dark:text-slate-400 uppercase tracking-widest">Indeks Peminjaman</p>
+                <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-1.5 leading-none">{bookingPercentage}%</p>
               </div>
-              <div className="text-3xl">📊</div>
+              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                </svg>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${bookingPercentage}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              {bookedCapacity} dari {totalCapacity} kapasitas terpakai
-            </p>
+            <div className="mt-4 flex items-center justify-between text-xs text-gray-400 dark:text-slate-400 font-medium">
+              <span>{bookedCapacity} dari {totalCapacity} kapasitas</span>
+              <span>{bookingPercentage > 0 ? "Kapasitas aktif terpakai" : "Belum ada peminjaman"}</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="flex items-center justify-between mb-3">
+          {/* Projector Usage Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/60 dark:border-slate-700/80 p-6 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Penggunaan Infokus</p>
-                <p className="text-2xl font-extrabold text-gray-900 mt-1">{projectorPercentage}%</p>
+                <p className="text-[10px] lg:text-xs font-bold text-blue-900/60 dark:text-slate-400 uppercase tracking-widest">Penggunaan Infokus</p>
+                <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-1.5 leading-none">{projectorPercentage}%</p>
               </div>
-              <div className="text-3xl">📽️</div>
+              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${projectorPercentage}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-400 dark:text-slate-400 font-medium mt-4">
               {projectorUsed.length} dari {roomsWithProjector.length} ruangan berproyektor sedang digunakan
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 p-4">
-            <p className="text-xs font-semibold text-blue-900 mb-2">💡 Info</p>
-            <p className="text-xs text-blue-800 leading-relaxed">
-              {occupiedRooms} ruangan sedang aktif digunakan. {availableRooms} ruangan tersedia. {pendingBookings.length} permintaan menunggu persetujuan.
-            </p>
+          {/* Info Card */}
+          <div className="bg-blue-50/70 border border-blue-100/50 dark:bg-blue-950/20 dark:border-blue-900/30 rounded-3xl p-5 flex gap-3.5">
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-blue-950 dark:text-blue-400">Info Dashboard</h4>
+              <p className="text-xs text-blue-900/80 dark:text-blue-300/80 leading-relaxed">
+                Saat ini terdapat {occupiedRooms} ruangan sedang aktif digunakan. {availableRooms} ruangan tersedia untuk reservasi baru. Terdapat {pendingBookings.length} permintaan yang sedang menunggu persetujuan administrator.
+              </p>
+            </div>
           </div>
+
         </div>
+
       </div>
 
+      {/* Pending Requests Section (conditional) */}
       {pendingBookings.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/60 dark:border-slate-700/80 shadow-xs">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700/60 flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-gray-900">Permintaan Peminjaman Tertunda</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{pendingBookings.length} permintaan perlu ditinjau</p>
+              <h2 className="text-base font-bold text-gray-900 dark:text-white">Permintaan Peminjaman Tertunda</h2>
+              <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">{pendingBookings.length} permintaan perlu ditinjau</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => onNavigate("booking")}>Lihat Semua →</Button>
           </div>
-          <div className="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {pendingBookings.slice(0, 3).map((booking) => (
               <BookingRequestCard
                 key={booking.id}
@@ -280,36 +337,38 @@ export default function AdminDashboard({ user, onNavigate }) {
         </div>
       )}
 
+      {/* Bottom Quick Navigation Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <button
           onClick={() => onNavigate("booking")}
-          className="bg-blue-50 border border-blue-200 rounded-2xl p-4 hover:bg-blue-100 transition-colors text-center"
+          className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/85 rounded-2xl p-5 hover:shadow-md transition-all duration-200 text-center cursor-pointer select-none group"
         >
-          <p className="text-2xl mb-2">📋</p>
-          <p className="text-sm font-semibold text-blue-900">Manajemen Booking</p>
+          <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">📅</p>
+          <p className="text-xs lg:text-sm font-bold text-gray-800 dark:text-slate-200">Manajemen Booking</p>
         </button>
         <button
           onClick={() => onNavigate("inventory")}
-          className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 hover:bg-emerald-100 transition-colors text-center"
+          className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/85 rounded-2xl p-5 hover:shadow-md transition-all duration-200 text-center cursor-pointer select-none group"
         >
-          <p className="text-2xl mb-2">📦</p>
-          <p className="text-sm font-semibold text-emerald-900">Inventaris</p>
+          <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">📦</p>
+          <p className="text-xs lg:text-sm font-bold text-gray-800 dark:text-slate-200">Inventaris Barang</p>
         </button>
         <button
           onClick={() => onNavigate("lostfound")}
-          className="bg-purple-50 border border-purple-200 rounded-2xl p-4 hover:bg-purple-100 transition-colors text-center"
+          className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/85 rounded-2xl p-5 hover:shadow-md transition-all duration-200 text-center cursor-pointer select-none group"
         >
-          <p className="text-2xl mb-2">🔍</p>
-          <p className="text-sm font-semibold text-purple-900">Barang Hilang</p>
+          <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">🔍</p>
+          <p className="text-xs lg:text-sm font-bold text-gray-800 dark:text-slate-200">Lost & Found</p>
         </button>
         <button
           onClick={() => onNavigate("users")}
-          className="bg-gray-50 border border-gray-200 rounded-2xl p-4 hover:bg-gray-100 transition-colors text-center"
+          className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/85 rounded-2xl p-5 hover:shadow-md transition-all duration-200 text-center cursor-pointer select-none group"
         >
-          <p className="text-2xl mb-2">👥</p>
-          <p className="text-sm font-semibold text-gray-900">Pengguna</p>
+          <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">👥</p>
+          <p className="text-xs lg:text-sm font-bold text-gray-800 dark:text-slate-200">Pengguna</p>
         </button>
       </div>
+
     </div>
   );
 }

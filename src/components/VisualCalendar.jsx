@@ -125,11 +125,14 @@ export default function VisualCalendar({ user, onSelectSlot, onPromptLogin, sele
         </div>
       ) : (
         <div className="overflow-x-auto select-none">
-          <div className="min-w-[900px] pb-4">
+          <div className="min-w-[900px] w-full pb-4">
             
             {/* Table Header containing Hours */}
-            <div className="grid grid-cols-12 bg-gray-50 dark:bg-slate-900/60 rounded-xl p-2.5 mb-4 text-center font-bold text-xs text-gray-500 dark:text-slate-400">
-              <div className="col-span-2 text-left pl-3 uppercase tracking-wider">Ruangan / Waktu</div>
+            <div 
+              className="grid bg-gray-50 dark:bg-slate-900/60 rounded-xl p-2.5 mb-4 text-center font-bold text-xs text-gray-500 dark:text-slate-400"
+              style={{ gridTemplateColumns: "minmax(150px, 1.6fr) repeat(11, 1fr)" }}
+            >
+              <div className="text-left pl-3 uppercase tracking-wider">Ruangan / Waktu</div>
               {hours.map((h) => (
                 <div key={h} className="col-span-1 border-l border-gray-200 dark:border-slate-700">
                   {String(h).padStart(2, "0")}:00
@@ -155,10 +158,14 @@ export default function VisualCalendar({ user, onSelectSlot, onPromptLogin, sele
                     let skipCounter = 0;
 
                     return (
-                      <div key={room.id} className="grid grid-cols-12 items-stretch min-h-[56px] border border-gray-100 dark:border-slate-700/80 rounded-2xl overflow-hidden hover:shadow-md transition-all bg-white dark:bg-slate-800">
+                      <div 
+                        key={room.id} 
+                        className="grid items-stretch min-h-[56px] border border-gray-100 dark:border-slate-700/80 rounded-2xl overflow-hidden hover:shadow-md transition-all bg-white dark:bg-slate-800"
+                        style={{ gridTemplateColumns: "minmax(150px, 1.6fr) repeat(11, 1fr)" }}
+                      >
                         
                         {/* Room label */}
-                        <div className="col-span-2 flex flex-col justify-center bg-gray-50/50 dark:bg-slate-900/30 px-4 py-2 border-r border-gray-100 dark:border-slate-700/80">
+                        <div className="flex flex-col justify-center bg-gray-50/50 dark:bg-slate-900/30 px-4 py-2 border-r border-gray-100 dark:border-slate-700/80">
                           <span className="text-sm font-extrabold text-gray-800 dark:text-slate-200">
                             {room.name}
                           </span>

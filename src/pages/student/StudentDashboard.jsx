@@ -16,7 +16,7 @@ function RoomCard({ room, onBook }) {
   return (
     <div 
       onClick={() => onBook(room)}
-      className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-150 dark:border-slate-700 p-5 flex flex-col justify-between hover:shadow-md transition-all duration-200 cursor-pointer group"
+      className="bg-white dark:bg-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-all duration-200 cursor-pointer group shadow-2xs"
     >
       <div>
         {/* Header */}

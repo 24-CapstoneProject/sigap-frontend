@@ -70,39 +70,34 @@ export function Sidebar({ activePage, onNavigate, user, isMobileOpen, onMobileCl
 
       {/* Sidebar Panel */}
       <aside className={`
-        fixed top-0 left-0 h-full w-64 bg-blue-950 border-r border-gray-100 z-30 flex flex-col
+        fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100 z-30 flex flex-col
         transition-transform duration-300 ease-in-out
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         {/* Logo */}
-        <div className="flex items-center justify-center px-6 py-4 border-b border-gray-150 bg-white">
-          <img src="/logo.png" alt="SIGAP Logo" className="h-8 object-contain" />
+        <div className="flex items-center justify-center px-6 py-4.5 border-b border-gray-100 bg-white">
+          <img src="/logo.png" alt="SIGAP Logo" className="h-11 object-contain" />
         </div>
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {user.role === "admin" && (
-            <div className="px-3 mb-4">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">SG Admin</p>
-            </div>
-          )}
-          <p className="px-3 mb-2 text-[10px] font-bold text-white uppercase tracking-widest">Menu Utama</p>
+          <p className="px-3 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Menu Utama</p>
           {navItems
             .filter(item => !item.adminOnly || user.role === "admin")
             .map(item => {
               const isActive = activePage === item.key;
               return (
                 <button
-                  key={item.key}
-                  onClick={() => { onNavigate(item.key); onMobileClose(); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                   key={item.key}
+                   onClick={() => { onNavigate(item.key); onMobileClose(); }}
+                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                     ${isActive
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-600"
-                      : "text-white hover:bg-gray-100 hover:text-gray-900"
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   aria-current={isActive ? "page" : undefined}
                 >
-                  <span className={isActive ? "text-white" : "text-gray-400"}>{item.icon}</span>
+                  <span className={isActive ? "text-blue-600" : "text-gray-400"}>{item.icon}</span>
                   {item.label}
                 </button>
               );
@@ -135,12 +130,25 @@ export function Sidebar({ activePage, onNavigate, user, isMobileOpen, onMobileCl
             </button>
           </div>
         ) : (
-          <div className="px-4 py-4 border-t border-gray-100 flex items-center gap-3">
-            <Avatar initials={user.avatar} size="md" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{user.name}</p>
-              <p className="text-xs text-gray-400 truncate">{user.nim}</p>
-            </div>
+          <div className="px-3 py-4 border-t border-gray-100 dark:border-slate-700">
+            <button
+              onClick={() => {
+                onNavigate("help");
+                onMobileClose();
+              }}
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-150 text-left cursor-pointer
+                ${activePage === "help"
+                  ? "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-slate-350 dark:hover:bg-slate-700/50"
+                }`}
+            >
+              <span className={activePage === "help" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-slate-400"}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0" />
+                </svg>
+              </span>
+              Pusat Bantuan
+            </button>
           </div>
         )}
       </aside>
@@ -161,6 +169,7 @@ export function Topbar({ activePage, user, onToggleRole, onLogout, onMobileMenuO
     inventory: "Inventaris Barang",
     lostfound: "Lost & Found",
     users: "Manajemen Pengguna",
+    help: "Pusat Bantuan",
   };
 
   // Close dropdown when clicking outside

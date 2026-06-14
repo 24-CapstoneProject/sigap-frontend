@@ -61,7 +61,7 @@ export default function LoginPage({ onLogin, onCancel }) {
       {/* LEFT IMAGE */}
       <div className="hidden md:block w-1/2 relative">
         <img
-          src="/gedungteknik.jpg"
+          src="/gedungteknik.jpeg"
           alt="Gedung"
           className="w-full h-full object-cover"
         />
@@ -72,8 +72,7 @@ export default function LoginPage({ onLogin, onCancel }) {
               Sistem Informasi Gedung, Aset, dan Peminjaman (SIGAP)
             </h1>
             <p className="text-sm leading-relaxed">
-              SIGAP adalah platform digital terintegrasi yang membantu pengelolaan data gedung,
-              inventaris aset, serta proses peminjaman fasilitas secara efektif, cepat, dan transparan.
+              (SIGAP) adalah platform digital terintegrasi yang dirancang untuk membantu pengelolaan data gedung, inventaris aset, serta proses peminjaman fasilitas dan barang secara efektif, cepat, dan transparan.
             </p>
           </div>
         </div>
@@ -88,13 +87,9 @@ export default function LoginPage({ onLogin, onCancel }) {
               onClick={onCancel}
               className="text-xs text-blue-600 hover:text-blue-800 font-semibold mb-4 flex items-center gap-1 cursor-pointer"
             >
-              ← Kembali ke Jadwal Ruangan
+              ← Kembali ke Portal Mading & Jadwal Ruangan
             </button>
           )}
-          {/* Logo */}
-          <div className="mb-6">
-            <img src="/logo.png" alt="SIGAP Logo" className="h-10 object-contain" />
-          </div>
           {/* Title */}
           <h2 className="text-2xl font-semibold text-gray-800 mb-1">
             Portal Login

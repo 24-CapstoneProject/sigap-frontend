@@ -18,6 +18,7 @@ import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 import StudentBooking from "./pages/student/StudentBooking.jsx";
 import StudentLostFound from "./pages/student/StudentLostFound.jsx";
 import StudentInventory from "./pages/student/StudentInventory.jsx";
+import StudentHelpCenter from "./pages/student/StudentHelpCenter.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
@@ -270,6 +271,7 @@ export default function App() {
         case "booking":    return <StudentBooking user={user} preFill={bookingPreFill} clearPreFill={() => setBookingPreFill(null)} />;
         case "lostfound":  return <StudentLostFound user={user} />;
         case "inventory":  return <StudentInventory user={user} />;
+        case "help":       return <StudentHelpCenter user={user} />;
         default:           return <StudentDashboard user={user} onNavigate={setActivePage} setBookingPreFill={setBookingPreFill} />;
       }
     } else if (user.role === "admin") {
@@ -309,7 +311,7 @@ export default function App() {
           onThemeChange={setTheme}
         />
 
-        <main className="flex-1 p-4 lg:p-6 max-w-7xl w-full mx-auto" id="main-content">
+        <main className="flex-1 p-4 lg:p-6 w-full" id="main-content">
           {renderPage()}
         </main>
       </div>

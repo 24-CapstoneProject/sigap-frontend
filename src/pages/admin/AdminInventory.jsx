@@ -26,7 +26,7 @@ function StatCard({ value, icon, color, badgeText, sublabel }) {
   const scheme = colorSchemes[color] || colorSchemes.blue;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-150 dark:border-slate-700/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-300 flex flex-col justify-between h-40">
+    <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-300 flex flex-col justify-between h-40">
       {/* Top row: Icon & Badge */}
       <div className="flex items-center justify-between">
         <div className={`w-12 h-12 rounded-xl ${scheme.bg} flex items-center justify-center`}>
@@ -357,7 +357,7 @@ export default function AdminInventory() {
           } 
           color="blue" 
           badgeText="Total Items" 
-          sublabel="Total keseluruhan infokus" 
+          sublabel="Total Keseluruhan Barang" 
         />
         <StatCard 
           value={counts.available} 
@@ -369,7 +369,7 @@ export default function AdminInventory() {
           } 
           color="emerald" 
           badgeText="Tersedia" 
-          sublabel="Total infokus tersedia" 
+          sublabel="Total Barang Yang Tersedia" 
         />
         <StatCard 
           value={counts.borrowed} 
@@ -382,7 +382,7 @@ export default function AdminInventory() {
           } 
           color="amber" 
           badgeText="Dipinjam" 
-          sublabel="Total infokus yang dipinjam" 
+          sublabel="Total Barang Yang Dipinjam" 
         />
         <StatCard 
           value={counts.broken} 
@@ -393,12 +393,12 @@ export default function AdminInventory() {
           } 
           color="red" 
           badgeText="Rusak" 
-          sublabel="Total Infokus Rusak" 
+          sublabel="Total Barang Rusak" 
         />
       </div>
 
       {/* Main Table Container Card */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-150 dark:border-slate-700/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/60 dark:border-slate-700/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
         
         {/* Table Header Section */}
         <div className="p-6 border-b border-gray-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -554,7 +554,7 @@ export default function AdminInventory() {
         </div>
 
         {/* Table Pagination Footer */}
-        <div className="p-4 border-t border-gray-150 dark:border-slate-700 flex items-center justify-between text-xs text-gray-500 bg-gray-50/20 dark:bg-slate-800/50 select-none">
+        <div className="p-4 border-t border-gray-100/70 dark:border-slate-700 flex items-center justify-between text-xs text-gray-500 bg-gray-50/20 dark:bg-slate-800/50 select-none">
           {/* Number buttons on the left */}
           <div className="flex items-center gap-1.5">
             <button
@@ -740,7 +740,7 @@ export default function AdminInventory() {
                         </div>
                       </div>
 
-                      <div className="bg-gray-50 dark:bg-slate-900/20 border border-gray-150 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+                      <div className="bg-gray-50 dark:bg-slate-900/20 border border-gray-200/60 dark:border-slate-700 rounded-2xl p-4 space-y-3">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Mata Kuliah / Kegiatan</span>

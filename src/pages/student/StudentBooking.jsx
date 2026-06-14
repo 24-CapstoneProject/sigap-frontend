@@ -559,7 +559,7 @@ export default function StudentBooking({ user, preFill, clearPreFill }) {
         </div>
 
         {/* Right Column: Documents Upload & Infokus option */}
-        <div className="space-y-6">
+        <div className="lg:sticky lg:top-24 space-y-6">
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-150 dark:border-slate-700 p-5 shadow-xs">
             <div className="flex items-center gap-2 text-gray-900 dark:text-white font-bold text-base mb-4">
               <span className="text-blue-600">📄</span>

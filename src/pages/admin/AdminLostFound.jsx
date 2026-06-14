@@ -6,62 +6,122 @@ import { mapLostFoundReport } from "../../utils/mappers.js";
 function ItemCard({ item, onSelectDetail, isTerbaru }) {
   const [expanded, setExpanded] = useState(false);
   const statusIcons = { found: "📦", lost: "🔍", claimed: "✅", pending: "⏳" };
-  const statusBg = {
-    found: "from-blue-50 to-blue-100/50",
-    lost: "from-red-50 to-red-100/50",
-    claimed: "from-gray-50 to-gray-100/50",
-    pending: "from-amber-50 to-amber-100/50",
-  };
+  const isClaimed = item.status === "claimed";
 
   return (
-    <div className={`rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 ${item.status === "claimed" ? "opacity-70" : ""}`}>
+    <div className={`rounded-2xl border overflow-hidden hover:shadow-lg transition-all duration-200
+      ${isClaimed 
+        ? "bg-[#F4F4F5] dark:bg-slate-900/60 border-gray-200/80 dark:border-slate-800" 
+        : "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"}`}>
       {/* Image or Placeholder */}
-      <div className="h-36 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-100 overflow-hidden relative">
+      <div className="h-40 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-100 dark:border-slate-700 overflow-hidden relative">
         {item.image ? (
           <img 
             src={`${API_BASE_URL}/uploads/${item.image}`} 
             alt={item.title} 
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${isClaimed ? "opacity-75 grayscale-[20%] brightness-[90%]" : ""}`}
             onError={(e) => {
               e.target.onerror = null;
               e.target.style.display = "none";
             }}
           />
         ) : (
-          <>
+          <div className={`flex flex-col items-center justify-center w-full h-full ${isClaimed ? "opacity-60" : ""}`}>
             <span className="text-4xl">{statusIcons[item.status] || "📋"}</span>
             <span className="text-xs text-gray-400 mt-1 font-medium">{item.location}</span>
-          </>
+          </div>
         )}
+        
         {isTerbaru && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">Terbaru</div>
+          <div className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-lg z-10 shadow-sm uppercase tracking-wider">
+            Terbaru
+          </div>
         )}
+
+        {/* Status Badge Overlay */}
+        <div className="absolute top-3 right-3 z-10 select-none">
+          {item.status === "claimed" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#6c757d]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              SUDAH DIKLAIM
+            </span>
+          )}
+          {item.status === "found" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#2563eb]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              DITEMUKAN
+            </span>
+          )}
+          {item.status === "lost" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#ef4444]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              HILANG
+            </span>
+          )}
+          {item.status === "pending" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#f59e0b]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              PENDING
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="p-4 bg-white">
+      <div className={`p-4 ${isClaimed ? "bg-[#F4F4F5] dark:bg-slate-900/60" : "bg-white dark:bg-slate-800"}`}>
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-sm font-bold text-gray-900 flex-1 pr-2">{item.title}</h3>
-          <Badge status={item.status} />
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white flex-1 pr-2">{item.title}</h3>
         </div>
 
-        <p className={`text-xs text-gray-500 leading-relaxed ${expanded ? "" : "truncate"}`}
+        <p className={`text-xs text-gray-550 dark:text-slate-400 leading-relaxed ${expanded ? "" : "truncate"}`}
           style={expanded ? {} : { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
           {item.description}
         </p>
+        {item.description.length > 80 && (
+          <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 cursor-pointer">
+            {expanded ? "Sembunyikan" : "Selengkapnya"}
+          </button>
+        )}
 
         <div className="mt-3 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span>Dilaporkan oleh {item.reporterName}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span>{item.date} · {item.time}</span>
+          {isClaimed ? (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
+              <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />
+              </svg>
+              <span>Status: <span className="font-semibold text-gray-800 dark:text-slate-200">Selesai</span></span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
+              <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>
+                {item.type === "lost" ? "Pemilik: " : "Pelapor: "}
+                <span className="font-semibold text-gray-800 dark:text-slate-200">{item.reporterName}</span>
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 text-xs text-gray-550 dark:text-slate-400">
+            <svg className="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0" />
+            </svg>
+            <span>{item.date} • {item.time}</span>
           </div>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-gray-50">
-          <button onClick={() => onSelectDetail(item)} className="w-full text-sm font-semibold text-blue-900 border-2 border-blue-900 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-150">
-            Lihat Detail
-          </button>
+        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700/60">
+          {isClaimed ? (
+            <button 
+              onClick={() => onSelectDetail(item)}
+              className="w-full text-sm font-semibold text-gray-500 bg-[#E4E4E7] dark:bg-slate-700 dark:text-slate-450 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-150 cursor-pointer text-center select-none border-none"
+            >
+              Terverifikasi
+            </button>
+          ) : (
+            <button 
+              onClick={() => onSelectDetail(item)} 
+              className="w-full text-sm font-semibold text-blue-900 border border-blue-900 dark:text-blue-400 dark:border-blue-800/80 px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors duration-150 cursor-pointer text-center"
+            >
+              Lihat Detail
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -257,32 +317,28 @@ export default function AdminLostFound() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-bold text-gray-900">Moderasi Mading Digital Lost & Found</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Verifikasi dan kelola laporan barang temuan dan kehilangan</p>
-      </div>
-
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <div className="bg-white dark:bg-slate-800 p-1.5 rounded-2xl border border-gray-200/60 dark:border-slate-700/60 inline-flex items-center gap-1.5 shadow-sm overflow-x-auto max-w-full">
           {[
-            { key: "all", label: "Semua" },
-            { key: "found", label: "Barang Temuan" },
-            { key: "lost", label: "Barang Hilang" },
-            { key: "claimed", label: "Sudah Diklaim" },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setFilterStatus(tab.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-150 ${
-                filterStatus === tab.key ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
-              }`}
-            >
-              {tab.label}
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${filterStatus === tab.key ? "bg-white/20 text-white" : "bg-gray-100 text-gray-500"}`}>
-                {counts[tab.key]}
-              </span>
-            </button>
-          ))}
+            { key: "all", label: "Semua", activeClass: "bg-[#2563eb] text-white shadow-xs" },
+            { key: "found", label: "Ditemukan", activeClass: "bg-[#2563eb] text-white shadow-xs" },
+            { key: "lost", label: "Hilang", activeClass: "bg-[#ef4444] text-white shadow-xs" },
+            { key: "claimed", label: "Sudah Diklaim", activeClass: "bg-[#6c757d] text-white shadow-xs" },
+          ].map((tab) => {
+            const isActive = filterStatus === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setFilterStatus(tab.key)}
+                className={`px-4.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer
+                  ${isActive 
+                    ? `${tab.activeClass} font-extrabold` 
+                    : "bg-transparent text-gray-500 dark:text-slate-400 hover:text-gray-955 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-750"}`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -434,8 +490,7 @@ export default function AdminLostFound() {
 
             <div className="border-t border-gray-100 pt-4">
               {selectedItem.rawStatus === "pending" ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="success" size="sm" className="justify-center text-xs" onClick={() => handleApprove(selectedItem.id)}>Terima Laporan</Button>
+                <div className="flex justify-end">
                   <Button variant="danger" size="sm" className="justify-center text-xs" onClick={() => handleReject(selectedItem.id)}>Tolak Laporan</Button>
                 </div>
               ) : (

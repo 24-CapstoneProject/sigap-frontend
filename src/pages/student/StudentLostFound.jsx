@@ -12,88 +12,113 @@ function ItemCard({ item, onClaim, onSelectItem }) {
   const [expanded, setExpanded] = useState(false);
 
   const statusIcons = { found: "📦", lost: "🔍", claimed: "✅" };
-  const statusBg = {
-    found:   "from-blue-50 to-blue-100/50",
-    lost:    "from-red-50 to-red-100/50",
-    claimed: "from-gray-50 to-gray-100/50",
-  };
+  const isClaimed = item.status === "claimed";
 
   return (
     <div 
-      className={`rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 ${item.status === "claimed" ? "opacity-70" : ""}`}>
+      className={`rounded-2xl border overflow-hidden hover:shadow-lg transition-all duration-200
+        ${isClaimed 
+          ? "bg-[#F4F4F5] dark:bg-slate-900/60 border-gray-200/80 dark:border-slate-800" 
+          : "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"}`}>
       {/* Image or Placeholder */}
-      <div className="h-36 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-100 overflow-hidden relative">
+      <div className="h-40 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-100 dark:border-slate-700 overflow-hidden relative">
         {item.image ? (
           <img 
             src={`${API_BASE_URL}/uploads/${item.image}`} 
             alt={item.title} 
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${isClaimed ? "opacity-75 grayscale-[20%] brightness-[90%]" : ""}`}
             onError={(e) => {
               e.target.onerror = null;
               e.target.style.display = "none";
             }}
           />
         ) : (
-          <>
+          <div className={`flex flex-col items-center justify-center w-full h-full ${isClaimed ? "opacity-60" : ""}`}>
             <span className="text-4xl">{statusIcons[item.status]}</span>
             <span className="text-xs text-gray-400 mt-1 font-medium">{item.location}</span>
-          </>
+          </div>
         )}
+
+        {/* Status Badge Overlay */}
+        <div className="absolute top-3 right-3 z-10 select-none">
+          {item.status === "claimed" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#6c757d]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              SUDAH DIKLAIM
+            </span>
+          )}
+          {item.status === "found" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#2563eb]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              DITEMUKAN
+            </span>
+          )}
+          {item.status === "lost" && (
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[#ef4444]/95 text-white uppercase tracking-wider shadow-sm border border-white/10 backdrop-blur-xs">
+              HILANG
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 bg-white">
+      <div className={`p-4 ${isClaimed ? "bg-[#F4F4F5] dark:bg-slate-900/60" : "bg-white dark:bg-slate-800"}`}>
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-sm font-bold text-gray-900 flex-1 pr-2">{item.title}</h3>
-          <Badge status={item.status} />
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white flex-1 pr-2">{item.title}</h3>
         </div>
 
-        <p className={`text-xs text-gray-500 leading-relaxed ${expanded ? "" : "truncate"}`}
+        <p className={`text-xs text-gray-500 dark:text-slate-400 leading-relaxed ${expanded ? "" : "truncate"}`}
            style={expanded ? {} : { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {item.description}
         </p>
         {item.description.length > 80 && (
-          <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-600 hover:underline mt-1">
+          <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 cursor-pointer">
             {expanded ? "Sembunyikan" : "Selengkapnya"}
           </button>
         )}
 
         <div className="mt-3 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>Lokasi: <span className="font-semibold text-gray-800">{item.location}</span></span>
-          </div>
-          {item.locationDetail && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          {isClaimed ? (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
               <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />
               </svg>
-              <span>{item.locationDetail}</span>
+              <span>Status: <span className="font-semibold text-gray-800 dark:text-slate-200">Selesai</span></span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
+              <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>
+                {item.type === "lost" ? "Pemilik: " : "Pelapor: "}
+                <span className="font-semibold text-gray-800 dark:text-slate-200">{item.reporterName}</span>
+              </span>
             </div>
           )}
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
+            <svg className="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0" />
             </svg>
-            <span>Dilaporkan oleh {item.reporterName}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{item.date} · {item.time}</span>
+            <span>{item.date} • {item.time}</span>
           </div>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-gray-50">
-          <button 
-            onClick={() => onSelectItem(item)}
-            className="w-full text-sm font-semibold text-blue-900 border-2 border-blue-900 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-150">
-            Detail
-          </button>
+        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700/60">
+          {isClaimed ? (
+            <button 
+              onClick={() => onSelectItem(item)}
+              className="w-full text-sm font-semibold text-gray-500 bg-[#E4E4E7] dark:bg-slate-700 dark:text-slate-450 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-150 cursor-pointer text-center select-none border-none"
+            >
+              Terverifikasi
+            </button>
+          ) : (
+            <button 
+              onClick={() => onSelectItem(item)}
+              className="w-full text-sm font-semibold text-blue-900 border border-blue-900 dark:text-blue-400 dark:border-blue-800/80 px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors duration-150 cursor-pointer text-center"
+            >
+              Detail
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -248,7 +273,7 @@ export default function StudentLostFound({ user }) {
 
       if (response.ok) {
         await loadItems();
-        showToast("✓ Permintaan klaim dikirim. Silahkan hubungi penemu untuk proses pengambilan.", "success");
+        showToast("✓ Permintaan klaim terkirim. Silakan ke penjaga Gedung SG untuk konfirmasi barang.", "success");
       } else {
         showToast("✗ Gagal membuat klaim", "error");
       }
@@ -340,25 +365,27 @@ export default function StudentLostFound({ user }) {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="bg-white dark:bg-slate-800 p-1.5 rounded-2xl border border-gray-150 dark:border-slate-700/60 inline-flex items-center gap-1.5 shadow-sm overflow-x-auto max-w-full">
         {[
-          { key: "all", label: "Semua" },
-          { key: "found", label: "Barang Temuan" },
-          { key: "lost", label: "Barang Hilang" },
-          { key: "claimed", label: "Sudah Diklaim" },
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setFilterStatus(tab.key)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-150
-              ${filterStatus === tab.key ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
-          >
-            {tab.label}
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${filterStatus === tab.key ? "bg-white/20 text-white" : "bg-gray-100 text-gray-500"}`}>
-              {counts[tab.key]}
-            </span>
-          </button>
-        ))}
+          { key: "all", label: "Semua", activeClass: "bg-[#2563eb] text-white shadow-xs" },
+          { key: "found", label: "Ditemukan", activeClass: "bg-[#2563eb] text-white shadow-xs" },
+          { key: "lost", label: "Hilang", activeClass: "bg-[#ef4444] text-white shadow-xs" },
+          { key: "claimed", label: "Sudah Diklaim", activeClass: "bg-[#6c757d] text-white shadow-xs" },
+        ].map(tab => {
+          const isActive = filterStatus === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setFilterStatus(tab.key)}
+              className={`px-4.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer
+                ${isActive 
+                  ? `${tab.activeClass} font-extrabold` 
+                  : "bg-transparent text-gray-500 dark:text-slate-400 hover:text-gray-955 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-750"}`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Items Grid */}
@@ -547,14 +574,16 @@ export default function StudentLostFound({ user }) {
             )}
 
             {selectedItem.status !== "claimed" && (
-              <div className="border-t border-gray-100 pt-4 flex gap-3">
-                <Button variant="ghost" size="md" className="flex-1 justify-center">
-                  💬 Hubungi
-                </Button>
+              <div className="border-t border-gray-100 dark:border-slate-700/60 pt-4 flex flex-col gap-2.5">
                 {selectedItem.status === "found" && (
-                  <Button variant="primary" size="md" className="flex-1 justify-center" onClick={() => handleClaimFromDetail(selectedItem.id)}>
-                    Itu Milik Saya
-                  </Button>
+                  <>
+                    <Button variant="primary" size="md" className="w-full justify-center" onClick={() => handleClaimFromDetail(selectedItem.id)}>
+                      Itu Milik Saya
+                    </Button>
+                    <p className="text-xs text-center text-amber-600 dark:text-amber-400 font-medium bg-amber-50 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-100 dark:border-amber-900/30">
+                      💡 Silakan ke petugas penjaga Gedung SG untuk melakukan konfirmasi barang.
+                    </p>
+                  </>
                 )}
               </div>
             )}

@@ -434,8 +434,8 @@ export default function AdminBooking() {
         />
       </div>
 
-      <div className="bg-white rounded-2xl border overflow-hidden">
-        <div className="grid grid-cols-5 bg-gray-50 px-4 py-3 text-xs text-gray-500 font-semibold">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200/60 dark:border-slate-700/60 overflow-hidden">
+        <div className="grid grid-cols-5 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-xs text-gray-500 font-semibold">
           <p>Student Name</p>
           <p>Course</p>
           <p>Room & Time</p>
@@ -449,7 +449,7 @@ export default function AdminBooking() {
           <div className="p-8 text-center text-gray-500">Belum ada permohonan peminjaman.</div>
         ) : (
           filtered.map((b) => (
-            <div key={b.id} className="border-t">
+            <div key={b.id} className="border-t border-gray-100/70 dark:border-slate-700/50">
               <div className="grid grid-cols-5 items-center px-4 py-4 text-sm">
                 <div>
                   <p className="font-semibold text-gray-900">{b.nama}</p>
