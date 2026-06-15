@@ -57,6 +57,92 @@ export default function StudentBooking({ user, preFill, clearPreFill }) {
   const [rescheduleErrors, setRescheduleErrors] = useState({});
   const [isSubmittingReschedule, setIsSubmittingReschedule] = useState(false);
 
+  const [bookingsForSelectedDate, setBookingsForSelectedDate] = useState([]);
+
+  useEffect(() => {
+    const fetchBookingsForDate = async () => {
+      const targetDate = form.tanggal || new Date().toISOString().split("T")[0];
+      try {
+        const response = await apiFetch(`/api/bookings/public-schedule?date=${targetDate}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBookingsForSelectedDate(data.bookings || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch bookings for date:", err);
+      }
+    };
+    fetchBookingsForDate();
+  }, [form.tanggal]);
+
+  const parseTimeToMinutes = (timeStr) => {
+    if (!timeStr) return 0;
+    const [hours, minutes] = String(timeStr).slice(0, 5).split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const isRoomOccupiedAtSelectedTime = (room) => {
+    const targetDate = form.tanggal || new Date().toISOString().split("T")[0];
+    let startStr = form.jamMulai ? form.jamMulai.trim().replace(/\./g, ":") : "";
+    let endStr = form.jamSelesai ? form.jamSelesai.trim().replace(/\./g, ":") : "";
+
+    const timeRegex = /^\d{1,2}:\d{2}$/;
+    const isStartValid = timeRegex.test(startStr);
+    const isEndValid = timeRegex.test(endStr);
+
+    let startMinutes = 0;
+    let endMinutes = 0;
+
+    if (isStartValid) {
+      const parts = startStr.split(":");
+      const hours = parts[0].padStart(2, '0');
+      const minutes = parts[1].padStart(2, '0');
+      startStr = `${hours}:${minutes}`;
+      startMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+    }
+    if (isEndValid) {
+      const parts = endStr.split(":");
+      const hours = parts[0].padStart(2, '0');
+      const minutes = parts[1].padStart(2, '0');
+      endStr = `${hours}:${minutes}`;
+      endMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (!isStartValid || !isEndValid || startMinutes >= endMinutes) {
+      if (targetDate === todayStr) {
+        const now = new Date();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const bookingsList = form.tanggal ? bookingsForSelectedDate : (room.currentBookings || []);
+        return bookingsList.some((bk) => {
+          if (bk.room_id !== room.id) return false;
+          const start = parseTimeToMinutes(bk.start_time);
+          const end = parseTimeToMinutes(bk.end_time);
+          return nowMinutes >= start && nowMinutes < end;
+        });
+      }
+      return false;
+    }
+
+    const bookingsList = form.tanggal ? bookingsForSelectedDate : (room.currentBookings || []);
+    return bookingsList.some((bk) => {
+      if (bk.room_id !== room.id) return false;
+      const bkStart = parseTimeToMinutes(bk.start_time);
+      const bkEnd = parseTimeToMinutes(bk.end_time);
+      return bkStart < endMinutes && bkEnd > startMinutes;
+    });
+  };
+
+  useEffect(() => {
+    if (form.roomId) {
+      const selectedRoomObj = rooms.find(r => r.id === form.roomId);
+      if (selectedRoomObj && isRoomOccupiedAtSelectedTime(selectedRoomObj)) {
+        handleChange("roomId", "");
+        showToast("Ruangan terpilih tidak tersedia pada waktu yang baru ditentukan.", "warning");
+      }
+    }
+  }, [form.tanggal, form.jamMulai, form.jamSelesai, bookingsForSelectedDate]);
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -406,7 +492,7 @@ export default function StudentBooking({ user, preFill, clearPreFill }) {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {paginatedRooms.map((room) => {
-                  const isOccupied = room.status !== "available";
+                  const isOccupied = isRoomOccupiedAtSelectedTime(room);
                   const isSelected = form.roomId === room.id;
 
                   return (
