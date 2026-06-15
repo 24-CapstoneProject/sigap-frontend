@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Badge, Button, Modal, Toast } from "../../components/ui/index.jsx";
 import { apiFetch } from "../../utils/api.js";
-import { mapBooking } from "../../utils/mappers.js";
+import { mapBooking, mapRoomForDashboard } from "../../utils/mappers.js";
 import VisualCalendar from "../../components/VisualCalendar.jsx";
 
 const calculateDuration = (startTime, endTime) => {
@@ -82,8 +82,9 @@ export default function StudentBooking({ user, preFill, clearPreFill }) {
         return;
       }
 
-      // Sort alphabetically by name
+      // Sort alphabetically by name and map room status dynamically
       const sorted = (roomsData.rooms || [])
+        .map(mapRoomForDashboard)
         .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
       setRooms(sorted);
     } catch (err) {
