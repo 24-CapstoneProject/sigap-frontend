@@ -65,6 +65,7 @@ export default function AdminInventory() {
     quantity: 1,
     category: "Elektronik",
     location: "Ruang Penyimpanan Gedung SG",
+    status: "available",
   });
 
   // Return States
@@ -109,12 +110,11 @@ export default function AdminInventory() {
         const data = await response.json();
         setItems(data.items || []);
       } else {
-        const error = await response.json();
-        showToast(error.error || "Gagal memuat inventaris", "error");
+        showToast("Gagal memuat data inventaris", "error");
       }
     } catch (err) {
       console.error("Load inventory error:", err);
-      showToast("Kesalahan koneksi saat memuat inventaris", "error");
+      showToast("Gagal memuat data inventaris", "error");
     } finally {
       setLoading(false);
     }
@@ -189,6 +189,7 @@ export default function AdminInventory() {
           quantity: parseInt(formData.quantity, 10) || 1,
           category: formData.category || "Elektronik",
           location: formData.location || "Ruang Penyimpanan Gedung SG",
+          status: formData.status || "available",
         }),
       });
 
@@ -201,6 +202,7 @@ export default function AdminInventory() {
           quantity: 1,
           category: "Elektronik",
           location: "Ruang Penyimpanan Gedung SG",
+          status: "available",
         });
         await loadInventory();
       } else {
@@ -685,9 +687,9 @@ export default function AdminInventory() {
                         setSelectedItem({ ...selectedItem, status: e.target.value })
                       }
                     >
-                      <option value="available">✓ Tersedia</option>
-                      <option value="borrowed">🚚 Dipinjam</option>
-                      <option value="broken">⚠️ Rusak</option>
+                      <option value="available">Tersedia</option>
+                      <option value="borrowed">Dipinjam</option>
+                      <option value="broken">Rusak</option>
                     </select>
                   </div>
 
@@ -878,14 +880,28 @@ export default function AdminInventory() {
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-gray-600 dark:text-slate-350 mb-1 block">Lokasi Penyimpanan</label>
-              <input
-                className="w-full border border-gray-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
-                placeholder="Contoh: Ruang Penyimpanan Gedung SG..."
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-600 dark:text-slate-350 mb-1 block">Lokasi Penyimpanan</label>
+                <input
+                  className="w-full border border-gray-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+                  placeholder="Contoh: Ruang Penyimpanan Gedung SG..."
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-gray-600 dark:text-slate-350 mb-1 block">Status</label>
+                <select
+                  className="w-full border border-gray-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                >
+                  <option value="available">Tersedia</option>
+                  <option value="broken">Rusak</option>
+                </select>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-3 border-t border-gray-250 dark:border-slate-750">
